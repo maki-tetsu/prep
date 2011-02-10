@@ -1,0 +1,49 @@
+title:
+  type: label
+  x_pos: 10.0
+  y_pos: 10.0
+  font: MS-Mincyo
+  size: 10.0
+  color:
+    red: 0.0
+    green: 0.0
+    blue: 0.0
+line01:
+  type: line
+  start_x_pos: 20.0
+  start_y_pos: 20.0
+  end_x_pos: 100.0
+  end_y_pos: 20.0
+  line_width: 1.0
+  line_color:
+    red: 0.0
+    green: 1.0
+    blue: 0.0
+line02:
+  type: line
+  start_x_pos: 20.0
+  start_y_pos: 400.0
+  end_x_pos: 100.0
+  end_y_pos: 400.0
+  line_width: 1.0
+  line_color:
+    red: 0.0
+    green: 1.0
+    blue: 1.0
+rect01:
+  type: rectangle
+  stroke: true
+  fill: true
+  x_pos: 200.0
+  y_pos: 200.0
+  width: 200.0
+  height: 200.0
+  line_width: 1.0
+  line_color:
+    red: 0.0
+    green: 0.0
+    blue: 1.0
+  fill_color:
+    red: 1.0
+    green: 0.0
+    blue: 0.0
