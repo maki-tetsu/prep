@@ -5,13 +5,13 @@
 
 Gem::Specification.new do |s|
   s.name = %q{prep}
-  s.version = "0.0.0"
+  s.version = "0.0.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Tetsuhisa MAKINO"]
   s.date = %q{2011-02-10}
-  s.description = %q{TODO: longer description of your gem}
-  s.email = %q{t-makino@wacom-it.co.jp}
+  s.description = %q{PREP is PDF Report generator depends on HPDF.}
+  s.email = %q{tim.makino@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.rdoc"
@@ -20,11 +20,16 @@ Gem::Specification.new do |s|
     ".document",
     ".rspec",
     "Gemfile",
+    "Gemfile.lock",
     "LICENSE.txt",
     "README.rdoc",
     "Rakefile",
     "VERSION",
+    "examples/generate_guide_pdf.rb",
+    "examples/generate_report_sample.rb",
+    "examples/sample.yml",
     "lib/prep.rb",
+    "prep.gemspec",
     "spec/prep_spec.rb",
     "spec/spec_helper.rb"
   ]
@@ -32,8 +37,10 @@ Gem::Specification.new do |s|
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
-  s.summary = %q{TODO: one-line summary of your gem}
+  s.summary = %q{PREP is PDF Report generator depends on HPDF.}
   s.test_files = [
+    "examples/generate_guide_pdf.rb",
+    "examples/generate_report_sample.rb",
     "spec/prep_spec.rb",
     "spec/spec_helper.rb"
   ]
@@ -43,24 +50,24 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
+      s.add_runtime_dependency(%q<hpdf>, [">= 2.0.8"])
       s.add_development_dependency(%q<rspec>, ["~> 2.3.0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.5.2"])
       s.add_development_dependency(%q<rcov>, [">= 0"])
-      s.add_development_dependency(%q<hpdf>, [">= 2.0.8"])
     else
+      s.add_dependency(%q<hpdf>, [">= 2.0.8"])
       s.add_dependency(%q<rspec>, ["~> 2.3.0"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
       s.add_dependency(%q<rcov>, [">= 0"])
-      s.add_dependency(%q<hpdf>, [">= 2.0.8"])
     end
   else
+    s.add_dependency(%q<hpdf>, [">= 2.0.8"])
     s.add_dependency(%q<rspec>, ["~> 2.3.0"])
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
     s.add_dependency(%q<rcov>, [">= 0"])
-    s.add_dependency(%q<hpdf>, [">= 2.0.8"])
   end
 end
 

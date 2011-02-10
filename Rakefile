@@ -15,9 +15,9 @@ Jeweler::Tasks.new do |gem|
   gem.name = "prep"
   gem.homepage = "http://github.com/maki-tetsu/prep"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
-  gem.email = "t-makino@wacom-it.co.jp"
+  gem.summary = %Q{PREP is PDF Report generator depends on HPDF.}
+  gem.description = %Q{PREP is PDF Report generator depends on HPDF.}
+  gem.email = "tim.makino@gmail.com"
   gem.authors = ["Tetsuhisa MAKINO"]
   # Include your dependencies below. Runtime dependencies are required when using your gem,
   # and development dependencies are only needed for development (ie running rake tasks, tests, etc)
