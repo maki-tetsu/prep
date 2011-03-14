@@ -1,49 +1,76 @@
-title:
-  type: label
-  x_pos: 10.0
-  y_pos: 10.0
-  font: MS-Mincyo
-  size: 10.0
-  color:
-    red: 0.0
-    green: 0.0
-    blue: 0.0
-line01:
-  type: line
-  start_x_pos: 20.0
-  start_y_pos: 20.0
-  end_x_pos: 100.0
-  end_y_pos: 20.0
-  line_width: 1.0
-  line_color:
-    red: 0.0
-    green: 1.0
-    blue: 0.0
-line02:
-  type: line
-  start_x_pos: 20.0
-  start_y_pos: 400.0
-  end_x_pos: 100.0
-  end_y_pos: 400.0
-  line_width: 1.0
-  line_color:
-    red: 0.0
-    green: 1.0
-    blue: 1.0
-rect01:
-  type: rectangle
-  stroke: true
-  fill: true
-  x_pos: 200.0
-  y_pos: 200.0
-  width: 200.0
-  height: 200.0
-  line_width: 1.0
-  line_color:
-    red: 0.0
-    green: 0.0
-    blue: 1.0
-  fill_color:
-    red: 1.0
-    green: 0.0
-    blue: 0.0
+page:
+  size: a4
+  orientation: portrait
+  margin:
+    top: 10
+    left: 10
+    bottom: 10
+    right: 10
+  header_height: 10
+  footer_height: 10
+content:
+  type: group
+  title:
+    type: label
+    label: "タイトル文字列"
+    region:
+      x: 10
+      y: 10
+      width: 100
+      height: 20
+    color:
+      red: 0
+      green: 0
+      blue: 0
+  line01:
+    type: line
+    start:
+      x: 10
+      y: 10
+    end:
+      x: 100
+      y: 10
+  line02:
+    type: line
+    start:
+      x: 10
+      y: 10
+    end:
+      x: 110
+      y: 110
+    color:
+      red: 1
+      green: 0
+      blue: 0
+  rectangle01:
+    type: rectangle
+    region:
+      x: 200
+      y: 200
+      width: 100
+      height: 50
+    line_color:
+      red: 0
+      green: 1
+      blue: 0
+    line_width: 3
+    fill_color:
+      red: 0
+      green: 1
+      blue: 1
+  rectangle02:
+    type: rectangle
+    region:
+      x: 10
+      y: 10
+      width: 100
+      height: 100
+    line_width: 1
+    line_color:
+      red: 1
+      green: 0
+      blue: 0
+    fill_color:
+      red: 1
+      green: 1
+      blue: 1

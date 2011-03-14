@@ -1,0 +1,102 @@
+# Rectangle クラスのソースファイル
+# Author:: maki-tetsu
+# Date:: 2011/03/11
+# Copyright:: Copyright (c) 2011 maki-tetsu
+
+require File.join(File.dirname(__FILE__), "drawable")
+require File.join(File.dirname(__FILE__), "color")
+require File.join(File.dirname(__FILE__), "region")
+
+module PREP # nodoc
+  module Core # nodoc
+    # 矩形描画構成要素クラス
+    class Rectangle < Drawable
+      STYLES = {
+        :solid => "solid",
+      }
+
+      FILL_PATTERNS = {
+        :flat => "flat",
+      }
+
+      @@default_values = {
+        :line_color   => { :red => 0, :green => 0, :blue => 0 },
+        :line_width   => 1,
+        :line_style   => STYLES[:solid],
+        :fill_pattern => FILL_PATTERNS[:flat],
+        :fill_color   => { :red => 1, :green => 1, :blue => 1 },
+      }
+
+      attr_reader :region, :line_color, :line_width, :line_style, :fill_pattern, :fill_color
+
+      def initialize(identifier, values = { })
+        super(identifier)
+        values = @@default_values.merge(key_string_to_symbol(values))
+
+        @region = Region.new(values[:region][:x], values[:region][:y],
+                             values[:region][:width], values[:region][:height])
+        @line_color = Color.new(values[:line_color][:red],
+                                values[:line_color][:green],
+                                values[:line_color][:blue])
+        self.line_width = values[:line_width]
+        self.line_style = values[:line_style]
+        self.fill_pattern = values[:fill_pattern]
+        @fill_color = Color.new(values[:fill_color][:red],
+                                values[:fill_color][:green],
+                                values[:fill_color][:blue])
+      end
+
+      def line_width=(w)
+        if w > 0
+          @line_width = w
+        else
+          raise "Rectangle line width must be grater than zero."
+        end
+      end
+
+      def line_style=(s)
+        if STYLES.values.include?(s)
+          @line_style = s
+        else
+          raise "Rectangle line style \"#{s}\" is unknown."
+        end
+      end
+
+      def fill_pattern=(fp)
+        if FILL_PATTERNS.values.include?(fp)
+          @fill_pattern = fp
+        else
+          raise "Rectangle fill pattern \"#{fp}\" is unknown."
+        end
+      end
+
+      # 矩形の描画
+      def draw(pdf, page, region, values)
+        page.set_line_width(@line_width.to_f)
+        unless @line_color.white?
+          page.set_rgb_stroke(@line_color.red.to_f,
+                              @line_color.green.to_f,
+                              @line_color.blue.to_f)
+        end
+        unless @fill_color.white?
+          page.set_rgb_fill(@fill_color.red.to_f,
+                            @fill_color.green.to_f,
+                            @fill_color.blue.to_f)
+        end
+
+        pos_x, pos_y = calculate_pos(page, region, @region.x, @region.y)
+        page.rectangle(pos_x, pos_y - @region.height, @region.width, @region.height)
+
+        if @fill_color.white?
+          unless @line_color.white?
+            page.stroke
+          end
+        elsif @line_color.white?
+          page.fill
+        else
+          page.fill_stroke
+        end
+      end
+    end
+  end
+end
