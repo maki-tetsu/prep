@@ -3,6 +3,7 @@ require File.join(File.dirname(__FILE__), "..", "lib", "prep")
 prep = PREP::Core::Prep.new("sample3.yml")
 values = {
   :content => {
+    :title => "任意のタイトルさんだよー",
     :table => {
       :values => [
                   { :column01_label => "03/01", :column02_label => 102, :column03_label => 103, :column04_label => 104 },

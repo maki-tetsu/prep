@@ -30,7 +30,7 @@ module PREP # nodoc
       # 継承先で実装されるべきメソッド
       # 引数として描画対象のページインスタンスと描画可能領域を
       # 表現するリージョンインスタンスを持ちます。
-      def draw(prep, region, values)
+      def draw(prep, page, region, values)
         raise NotImplementedError.new
       end
 

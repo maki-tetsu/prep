@@ -81,33 +81,33 @@ module PREP # nodoc
       end
 
       # 矩形の描画
-      def draw(prep, region, values)
+      def draw(prep, page, region, values)
         STDERR.puts("Draw on #{self.class} #{self.identifier}") if ENV['DEBUG']
         # 領域判定
         calculate_region(prep, region, values)
-        prep.current_page.set_line_width(@line_width.to_f)
+        page.set_line_width(@line_width.to_f)
         unless @line_color.white?
-          prep.current_page.set_rgb_stroke(@line_color.red.to_f,
-                                           @line_color.green.to_f,
-                                           @line_color.blue.to_f)
+          page.set_rgb_stroke(@line_color.red.to_f,
+                              @line_color.green.to_f,
+                              @line_color.blue.to_f)
         end
         unless @fill_color.white?
-          prep.current_page.set_rgb_fill(@fill_color.red.to_f,
-                                         @fill_color.green.to_f,
-                                         @fill_color.blue.to_f)
+          page.set_rgb_fill(@fill_color.red.to_f,
+                            @fill_color.green.to_f,
+                            @fill_color.blue.to_f)
         end
 
-        pos_x, pos_y = calculate_pos(prep.current_page, region, @region.x, @region.y)
-        prep.current_page.rectangle(pos_x, pos_y - @region.height, @region.width, @region.height)
+        pos_x, pos_y = calculate_pos(page, region, @region.x, @region.y)
+        page.rectangle(pos_x, pos_y - @region.height, @region.width, @region.height)
 
         if @fill_color.white?
           unless @line_color.white?
-            prep.current_page.stroke
+            page.stroke
           end
         elsif @line_color.white?
-          prep.current_page.fill
+          page.fill
         else
-          prep.current_page.fill_stroke
+          page.fill_stroke
         end
       end
     end

@@ -21,7 +21,7 @@ module PREP
   module Core
     # PREP の中心クラス
     class Prep
-      attr_reader :pdf
+      attr_reader :pdf, :pages
 
       # 初期化
       #
@@ -64,7 +64,7 @@ module PREP
         content = @content[:content]
 
         # 描画領域を含めて描画開始
-        content.draw(self, page_content_region, values[:content])
+        content.draw(self, current_page, page_content_region, values[:content])
       end
 
       # ヘッダの埋め込み
@@ -74,7 +74,7 @@ module PREP
         header = @content[:header]
 
         @pages.each do |page|
-          header.draw(@pdf, page, page_header_region, values[:header])
+          header.draw(self, page, page_header_region, values[:header])
         end
       end
 
@@ -84,7 +84,7 @@ module PREP
 
         footer = @content[:footer]
         @pages.each do |page|
-          footer.draw(@pdf, page, page_footer_region, values[:footer])
+          footer.draw(self, page, page_footer_region, values[:footer])
         end
       end
 

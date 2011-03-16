@@ -98,7 +98,7 @@ module PREP # nodoc
         return group_region_size[:width], group_region_size[:height]
       end
 
-      def draw(prep, region, values)
+      def draw(prep, page, region, values)
         STDERR.puts("Draw on #{self.class} #{self.identifier}") if ENV['DEBUG']
         values ||= { }
         # 管理対象の各オブジェクトに対して描画を開始
@@ -109,7 +109,7 @@ module PREP # nodoc
             drawable_values = { }
           end
 
-          drawable.draw(prep, region, drawable_values)
+          drawable.draw(prep, page, region, drawable_values)
         end
       end
 

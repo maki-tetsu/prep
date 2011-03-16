@@ -109,7 +109,7 @@ module PREP # nodoc
       end
 
       # 実際の描画を実施
-      def draw(prep, region, values)
+      def draw(prep, page, region, values)
         STDERR.puts("Draw on #{self.class} #{self.identifier}") if ENV['DEBUG']
         # リージョン補正
         current_region = region.dup
@@ -119,13 +119,13 @@ module PREP # nodoc
         current_region.height -= point.y
 
         # ヘッダブロック描画
-        current_region = draw_header(prep, current_region, values)
+        current_region = draw_header(prep, page, current_region, values)
 
         # 繰り返しブロック描画
-        current_region = draw_iterator(prep, current_region, values)
+        current_region = draw_iterator(prep, page, current_region, values)
 
         # フッタブロック描画
-        current_region = draw_footer(prep, current_region, values)
+        current_region = draw_footer(prep, page, current_region, values)
       end
 
       private
@@ -133,11 +133,11 @@ module PREP # nodoc
       # ヘッダ構成要素を描画するためのメソッド
       #
       # 描画後に新しい region を返却
-      def draw_header(prep, region, values)
+      def draw_header(prep, page, region, values)
         unless @header_group.nil?
           header = prep.group(@header_group)
           w, h = header.calculate_region(prep, region, values[:header])
-          header.draw(prep, region, values[:header])
+          header.draw(prep, page, region, values[:header])
           if @direction == DIRECTIONS[:horizontal] # 右方向
             region.x += w + @gap
             region.width -= w + @gap
@@ -151,12 +151,12 @@ module PREP # nodoc
       end
 
       # 繰返し構成要素を描画するためのメソッド
-      def draw_iterator(prep, region, values)
+      def draw_iterator(prep, page, region, values)
         iterator = prep.group(@iterator_group)
         values[:values].each do |iterator_values|
           begin
             w, h = iterator.calculate_region(prep, region, iterator_values)
-            iterator.draw(prep, region, iterator_values)
+            iterator.draw(prep, page, region, iterator_values)
             # 描画したので、方向に応じてリージョン補正
             if @direction == DIRECTIONS[:horizontal] # 右方向
               region.x += w + @gap
@@ -168,10 +168,10 @@ module PREP # nodoc
           rescue RegionWidthOverflowError
             # 幅オーバーフロー時のページ切り替え対応
             if @page_break && @direction == DIRECTIONS[:horizontal]
-              prep.add_page
+              page = prep.add_page
               region = prep.page_content_region
               # ヘッダを再描画
-              region = draw_header(prep, region, values)
+              region = draw_header(prep, page, region, values)
               # リトライ
               retry
             end
@@ -179,10 +179,10 @@ module PREP # nodoc
           rescue RegionHeightOverflowError
             # 高さオーバーフロー時のページ切り替え対応
             if @page_break && @direction == DIRECTIONS[:vertical]
-              prep.add_page
+              page = prep.add_page
               region = prep.page_content_region
               # ヘッダを再描画
-              region = draw_header(prep, region, values)
+              region = draw_header(prep, page, region, values)
               # リトライ
               retry
             end
@@ -194,12 +194,12 @@ module PREP # nodoc
       end
 
       # フッタ構成要素を描画するためのメソッド
-      def draw_footer(prep, region, values)
+      def draw_footer(prep, page, region, values)
         unless @footer_group.nil?
           begin
             footer = prep.group(@footer_group)
             w, h = footer.calculate_region(prep, region, values[:footer])
-            footer.draw(prep, region, values[:footer])
+            footer.draw(prep, page, region, values[:footer])
             if @direction == DIRECTIONS[:horizontal] # 右方向
               region.x += w
               region.width -= w
@@ -209,17 +209,17 @@ module PREP # nodoc
             end
           rescue RegionWidthOverflowError
             if @page_break && @direction == DIRECTIONS[:horizontal]
-              prep.add_page
+              page = prep.add_page
               region = prep.page_content_region
-              region = draw_header(prep, region, values)
+              region = draw_header(prep, page, region, values)
               retry
             end
             raise
           rescue RegionHeightOverflowError
             if @page_break && @direction == DIRECTIONS[:vertical]
-              prep.add_page
+              page = prep.add_page
               region = prep.page_content_region
-              region = draw_header(prep, region, values)
+              region = draw_header(prep, page, region, values)
               retry
             end
             raise
