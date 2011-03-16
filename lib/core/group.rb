@@ -76,6 +76,7 @@ module PREP # nodoc
       # グループを構成する各要素が全体で占有する領域サイズを返却
       def calculate_region(prep, region, values)
         values ||= { }
+
         # 各構成要素の描画領域を計算して最大の領域を計算、width, height のみを利用
         group_region_size = drawable_items.inject({ :width => 0, :height => 0 }) do |size, drawable|
           if values.has_key?(drawable.identifier)
@@ -91,10 +92,14 @@ module PREP # nodoc
           next size
         end
 
+        ret_region = Region.new(0, 0,
+                                region.width - group_region_size[:width],
+                                region.height - group_region_size[:height])
         return group_region_size[:width], group_region_size[:height]
       end
 
       def draw(prep, region, values)
+        STDERR.puts("Draw on #{self.class} #{self.identifier}") if ENV['DEBUG']
         values ||= { }
         # 管理対象の各オブジェクトに対して描画を開始
         drawable_items.each do |drawable|

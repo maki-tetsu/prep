@@ -5,6 +5,12 @@
 
 module PREP # nodoc
   module Core # nodoc
+
+    # リージョンの幅がマイナスになった場合に発行される例外
+    class RegionWidthOverflowError < StandardError; end
+    # リージョンの高さがマイナスになった場合に発行される例外
+    class RegionHeightOverflowError < StandardError; end
+
     class Region
       attr_reader :x, :y, :width, :height
 
@@ -25,18 +31,18 @@ module PREP # nodoc
       end
 
       def width=(width)
-        if width > 0
+        if width >= 0
           @width = width
         else
-          raise "Region width must be grater than zero."
+          raise RegionWidthOverflowError.new("Region width must be grater than zero.")
         end
       end
 
       def height=(height)
-        if height > 0
+        if height >= 0
           @height = height
         else
-          raise "Region height must be grater than zero."
+          raise RegionHeightOverflowError.new("Region height must be grater than zero.")
         end
       end
     end

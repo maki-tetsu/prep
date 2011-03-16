@@ -45,13 +45,13 @@ content:
   rectangle01:
     type: rectangle
     region:
-      x: 200
-      y: 200
-      width: 100
-      height: 50
+      x: 120
+      y: 0
+      width: 10
+      height: 5
     line_color:
       red: 0
-      green: 1
+      green: 0.3
       blue: 0
     line_width: 3
     fill_color:

@@ -12,6 +12,7 @@ content:
   type: group
   table:
     type: loop
+    page_break: true
     x: 0
     y: 0
     direction: horizontal
@@ -27,61 +28,61 @@ table_header:
     region:
       x: 0
       y: 0
-      width: 100
-      height: 20
+      width: 30
+      height: 10
   column01_label:
     type: label
     label: 日付
     region:
       x: 0
       y: 0
-      width: 100
-      height: 20
+      width: 30
+      height: 10
   column02_rect:
     type: rectangle
     region:
       x: 0
-      y: 20
-      width: 100
-      height: 20
+      y: 10
+      width: 30
+      height: 10
   column02_label:
     type: label
     label: 区分A
     region:
       x: 0
-      y: 20
-      width: 100
-      height: 20
+      y: 10
+      width: 30
+      height: 10
   column03_rect:
     type: rectangle
     region:
       x: 0
-      y: 40
-      width: 100
-      height: 20
+      y: 20
+      width: 30
+      height: 10
   column03_label:
     type: label
     label: 区分B
     region:
       x: 0
-      y: 40
-      width: 100
-      height: 20
+      y: 20
+      width: 30
+      height: 10
   column04_rect:
     type: rectangle
     region:
       x: 0
-      y: 60
-      width: 100
-      height: 20
+      y: 30
+      width: 30
+      height: 10
   column04_label:
     type: label
     label: 区分C
     region:
       x: 0
-      y: 60
-      width: 100
-      height: 20
+      y: 30
+      width: 30
+      height: 10
 table_content:
   type: group
   column01_rect:
@@ -89,58 +90,58 @@ table_content:
     region:
       x: 0
       y: 0
-      width: 100
-      height: 20
+      width: 30
+      height: 10
   column01_label:
     type: label
     label: 日付
     region:
       x: 0
       y: 0
-      width: 100
-      height: 20
+      width: 30
+      height: 10
   column02_rect:
     type: rectangle
     region:
       x: 0
-      y: 20
-      width: 100
-      height: 20
+      y: 10
+      width: 30
+      height: 10
   column02_label:
     type: label
     label: 区分A
     region:
       x: 0
-      y: 20
-      width: 100
-      height: 20
+      y: 10
+      width: 30
+      height: 10
   column03_rect:
     type: rectangle
     region:
       x: 0
-      y: 40
-      width: 100
-      height: 20
+      y: 20
+      width: 30
+      height: 10
   column03_label:
     type: label
     label: 区分B
     region:
       x: 0
-      y: 40
-      width: 100
-      height: 20
+      y: 20
+      width: 30
+      height: 10
   column04_rect:
     type: rectangle
     region:
       x: 0
-      y: 60
-      width: 100
-      height: 20
+      y: 30
+      width: 30
+      height: 10
   column04_label:
     type: label
     label: 区分C
     region:
       x: 0
-      y: 60
-      width: 100
-      height: 20
+      y: 30
+      width: 30
+      height: 10

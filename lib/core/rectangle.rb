@@ -74,11 +74,17 @@ module PREP # nodoc
       end
 
       def calculate_region(prep, region, value)
+        ret_region = Region.new(0, 0,
+                                region.width - (@region.x + @region.width),
+                                region.height - (@region.y + @region.height))
         return @region.x + @region.width, @region.y + @region.height
       end
 
       # 矩形の描画
       def draw(prep, region, values)
+        STDERR.puts("Draw on #{self.class} #{self.identifier}") if ENV['DEBUG']
+        # 領域判定
+        calculate_region(prep, region, values)
         prep.current_page.set_line_width(@line_width.to_f)
         unless @line_color.white?
           prep.current_page.set_rgb_stroke(@line_color.red.to_f,

@@ -55,11 +55,17 @@ module PREP # nodoc
         width = [@start_point.x, @end_point.x].max
         height = [@start_point.y, @end_point.y].max
 
+        ret_region = Region.new(0, 0,
+                                region.width - width,
+                                region.height - height)
         return width, height
       end
 
       # 直線の描画
       def draw(prep, region, values)
+        STDERR.puts("Draw on #{self.class} #{self.identifier}") if ENV['DEBUG']
+        # 領域判定
+        calculate_region(prep, region, values)
         # 幅指定
         prep.current_page.set_line_width(@width)
         # 色指定

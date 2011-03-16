@@ -65,6 +65,9 @@ module PREP # nodoc
 
       # 幅と高さを返却
       def calculate_region(prep, region, value)
+        ret_region = Region.new(0, 0,
+                                region.width - (@region.x + @region.width),
+                                region.height - (@region.y + @region.height))
         return @region.x + @region.width, @region.y + @region.height
       end
 
@@ -72,6 +75,9 @@ module PREP # nodoc
       #
       # TODO align 指定が効かない
       def draw(prep, region, value)
+        STDERR.puts("Draw on #{self.class} #{self.identifier}") if ENV['DEBUG']
+        # 領域判定
+        calculate_region(prep, region, value)
         # 文字列指定があるかを確認
         if value.nil? || value.to_s == ""
           string = self.label
