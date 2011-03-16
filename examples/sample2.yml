@@ -1,0 +1,164 @@
+page:
+  size: a4
+  orientation: portrait
+  margin:
+    top: 10
+    left: 10
+    bottom: 10
+    right: 10
+  header_height: 0
+  footer_height: 0
+content:
+  type: group
+  table:
+    type: loop
+    x: 0
+    y: 0
+    direction: vertical
+    gap: 0
+    header: table_header
+    iterator: table_content
+    footer: table_footer
+
+# table の定義
+table_header:
+  type: group
+  column01_rect:
+    type: rectangle
+    region:
+      x: 0
+      y: 0
+      width: 100
+      height: 20
+  column01_label:
+    type: label
+    label: A
+    region:
+      x: 0
+      y: 0
+      width: 100
+      height: 20
+  column02_rect:
+    type: rectangle
+    region:
+      x: 100
+      y: 0
+      width: 100
+      height: 20
+  column02_label:
+    type: label
+    label: B
+    region:
+      x: 100
+      y: 0
+      width: 100
+      height: 20
+  column03_rect:
+    type: rectangle
+    region:
+      x: 200
+      y: 0
+      width: 100
+      height: 20
+  column03_label:
+    type: label
+    label: C
+    region:
+      x: 200
+      y: 0
+      width: 100
+      height: 20
+table_content:
+  type: group
+  column01_rect:
+    type: rectangle
+    region:
+      x: 0
+      y: 0
+      width: 100
+      height: 20
+  column01_label:
+    type: label
+    label: A
+    region:
+      x: 0
+      y: 0
+      width: 100
+      height: 20
+  column02_rect:
+    type: rectangle
+    region:
+      x: 100
+      y: 0
+      width: 100
+      height: 20
+  column02_label:
+    type: label
+    label: B
+    region:
+      x: 100
+      y: 0
+      width: 100
+      height: 20
+  column03_rect:
+    type: rectangle
+    region:
+      x: 200
+      y: 0
+      width: 100
+      height: 20
+  column03_label:
+    type: label
+    label: C
+    region:
+      x: 200
+      y: 0
+      width: 100
+      height: 20
+table_footer:
+  type: group
+  column01_rect:
+    type: rectangle
+    region:
+      x: 0
+      y: 0
+      width: 100
+      height: 20
+  column01_label:
+    type: label
+    label: a
+    region:
+      x: 0
+      y: 0
+      width: 100
+      height: 20
+  column02_rect:
+    type: rectangle
+    region:
+      x: 100
+      y: 0
+      width: 100
+      height: 20
+  column02_label:
+    type: label
+    label: b
+    region:
+      x: 100
+      y: 0
+      width: 100
+      height: 20
+  column03_rect:
+    type: rectangle
+    region:
+      x: 200
+      y: 0
+      width: 100
+      height: 20
+  column03_label:
+    type: label
+    label: c
+    region:
+      x: 200
+      y: 0
+      width: 100
+      height: 20

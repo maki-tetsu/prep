@@ -20,12 +20,17 @@ module PREP # nodoc
         @identifier = identifier
       end
 
+      # 描画領域計算
+      def calculate_region(prep, region, values)
+        raise NotImplementedError.new
+      end
+
       # 描画処理の呼び出し
       #
       # 継承先で実装されるべきメソッド
       # 引数として描画対象のページインスタンスと描画可能領域を
       # 表現するリージョンインスタンスを持ちます。
-      def draw(pdf, page, region, values)
+      def draw(prep, region, values)
         raise NotImplementedError.new
       end
 

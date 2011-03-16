@@ -1,0 +1,121 @@
+page:
+  size: a4
+  orientation: portrait
+  margin:
+    top: 40
+    left: 20
+    bottom: 10
+    right: 20
+  header_height: 50
+  footer_height: 40
+header:
+  type: group
+  header_misc:
+    type: label
+    label: "吉川市　（平成22年12月分）　2011年1月25日"
+    align: right
+    region:
+      x: 300
+      y: 0
+      width: 200
+      height: 40
+  header_title:
+    type: label
+    label: "個別健診　請求金額内訳書"
+    align: left
+    region:
+      x: 0
+      y: 20
+      width: 200
+      height: 20
+  table_header_column01_rect:
+    type: rectangle
+    region:
+      x: 100
+      y: 40
+      width: 100
+      height: 20
+    line_width: 1
+  table_header_column02_rect:
+    type: rectangle
+    region:
+      x: 200
+      y: 40
+      width: 100
+      height: 20
+    line_width: 1
+  table_header_column03_rect:
+    type: rectangle
+    region:
+      x: 300
+      y: 40
+      width: 100
+      height: 20
+    line_width: 1
+  table_header_column01_label:
+    type: label
+    label: "単価"
+    region:
+      x: 100
+      y: 40
+      width: 100
+      height: 20
+    line_width: 1
+  table_header_column02_label:
+    type: label
+    label: "人数"
+    region:
+      x: 200
+      y: 40
+      width: 100
+      height: 20
+    line_width: 1
+  table_header_column03_label:
+    type: label
+    label: "合計"
+    region:
+      x: 300
+      y: 40
+      width: 100
+      height: 20
+    line_width: 1
+content:
+  type: group
+  title:
+    type: label
+    label: タイトル
+    region:
+      x: 0
+      y: 0
+      width: 100
+      height: 20
+
+  table01_group:
+    type: group
+    table01_header_rect:
+      type: rectangle
+      region:
+        x: 10
+        y: 0
+        width: 400
+        height: 20
+      fill_color:
+        red: 0.7
+        green: 0.7
+        blue: 0.7
+    table01_header_label:
+      type: label
+      region:
+        x: 10
+        y: 3
+        width: 400
+        height: 16
+      label: "生活習慣予防検査"
+    table01_content:
+      type: reference
+      group: table01_content
+      loop: vertical
+      gap: 0
+    table01_content_group:
+footer:
+  type: group

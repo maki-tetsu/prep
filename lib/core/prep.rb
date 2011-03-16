@@ -20,6 +20,8 @@ module PREP
   module Core
     # PREP の中心クラス
     class Prep
+      attr_reader :pdf
+
       # 初期化
       #
       # 設定ファイルのパスが与えられれば初期化
@@ -44,7 +46,7 @@ module PREP
         @pdf.use_jp_encodings
         @pages = []
         # 1ページ目の追加
-        @pages << (@current_page = @pdf.add_page)
+        add_page
 
         draw_contents(values)
         draw_headers(values)
@@ -61,7 +63,7 @@ module PREP
         content = @content[:content]
 
         # 描画領域を含めて描画開始
-        content.draw(@pdf, current_page, page_content_region, values[:content])
+        content.draw(self, page_content_region, values[:content])
       end
 
       # ヘッダの埋め込み
@@ -90,7 +92,7 @@ module PREP
       # 新規ページを追加し、参照を返却
       def add_page
         @pages << (page = @pdf.add_page)
-        page.set_size(@page_config.size, @page.orientation)
+        page.set_size(@page_config.size, @page_config.orientation)
 
         return page
       end
@@ -195,9 +197,15 @@ module PREP
         @content = Group.new
         config_values.keys.each do |identifier|
           unless identifier == "page"
-            @content.add_drawable(identifier, config_values[identifier])
+            @content.add_drawable(identifier, config_values[identifier], true)
           end
         end
+      end
+
+      # 指定されたグループ識別子を検索して返却
+      # 存在しない場合は例外発生
+      def group(group_identifiy)
+        return @content[group_identifiy]
       end
     end
   end

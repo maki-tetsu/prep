@@ -60,25 +60,30 @@ module PREP # nodoc
         end
       end
 
+      # 幅と高さを返却
+      def calculate_region(prep, region, value)
+        return @region.x + @region.width, @region.y + @region.height
+      end
+
       # 指定された領域を元に再計算して描画を実施
       #
       # TODO align 指定が効かない
-      def draw(pdf, page, region, value)
+      def draw(prep, region, value)
         # 文字列指定があるかを確認
-        if value.nil?
+        if value.nil? || value.to_s == ""
           string = self.label
         else
           string = value.to_s
         end
         # 文字列の描画
-        font = pdf.get_font(self.font, "90ms-RKSJ-H")
-        page.begin_text
-        page.set_rgb_fill(@color.red.to_f, @color.green.to_f, @color.blue.to_f)
-        pos_x, pos_y = calculate_pos(page, region, @region.x, @region.y)
-        page.move_text_pos(pos_x, pos_y - @region.height)
-        page.set_font_and_size(font, @size)
-        page.show_text(NKF.nkf("--oc=cp932 -W8", string))
-        page.end_text
+        font = prep.pdf.get_font(self.font, "90ms-RKSJ-H")
+        prep.current_page.begin_text
+        prep.current_page.set_rgb_fill(@color.red.to_f, @color.green.to_f, @color.blue.to_f)
+        pos_x, pos_y = calculate_pos(prep.current_page, region, @region.x, @region.y)
+        prep.current_page.move_text_pos(pos_x, pos_y - @region.height)
+        prep.current_page.set_font_and_size(font, @size)
+        prep.current_page.show_text(NKF.nkf("--oc=cp932 -W8", string))
+        prep.current_page.end_text
       end
     end
   end

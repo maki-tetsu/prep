@@ -7,12 +7,14 @@ require File.join(File.dirname(__FILE__), "drawable")
 require File.join(File.dirname(__FILE__), "label")
 require File.join(File.dirname(__FILE__), "line")
 require File.join(File.dirname(__FILE__), "rectangle")
-require File.join(File.dirname(__FILE__), "reference")
+require File.join(File.dirname(__FILE__), "loop")
 
 module PREP # nodoc
   module Core # nodoc
     # 呼び出し可能グループの定義
     class Group < Drawable
+      attr_reader :drawables
+
       # 初期化
       def initialize(identifier = "main", values = { })
         super(identifier)
@@ -27,8 +29,8 @@ module PREP # nodoc
 
       # 指定された識別子を持つ定義情報を返却
       def [](drawable_key)
-        if @drawables.has_key?(drawable_key)
-          return @drawables[drawable_key]
+        if @drawables.has_key?(drawable_key.to_sym)
+          return @drawables[drawable_key.to_sym]
         else
           raise "Unknown drawable key \"#{drawable_key}\"."
         end
@@ -42,7 +44,7 @@ module PREP # nodoc
       # 構成要素の追加
       #
       # 引数に渡されるのは単一の構成要素
-      def add_drawable(identifier, config)
+      def add_drawable(identifier, config, global = false)
         # 事前にキー重複をチェック
         if @drawables.has_key?(identifier.to_sym)
           raise "Duplicated ID \"#{identifier}\"."
@@ -57,9 +59,13 @@ module PREP # nodoc
         when "rectangle"
           klass = Rectangle
         when "group"
+          # global でのみグループ定義を許可
+          unless global
+            raise "Group definition allowed at global level only for \"#{identifier}\"."
+          end
           klass = Group
-        when "reference"
-          klass = Reference
+        when "loop"
+          klass = Loop
         else
           raise "Unknown type expression \"#{config["type"]}\"."
         end
@@ -67,14 +73,51 @@ module PREP # nodoc
         @drawables[identifier.to_sym] = klass.new(identifier, config)
       end
 
-      def draw(pdf, page, region, values)
+      # グループを構成する各要素が全体で占有する領域サイズを返却
+      def calculate_region(prep, region, values)
+        values ||= { }
+        # 各構成要素の描画領域を計算して最大の領域を計算、width, height のみを利用
+        group_region_size = drawable_items.inject({ :width => 0, :height => 0 }) do |size, drawable|
+          if values.has_key?(drawable.identifier)
+            drawable_values = values[drawable.identifier]
+          else
+            drawable_values = { }
+          end
+          width, height = drawable.calculate_region(prep, region, drawable_values)
+
+          size[:width] = width if size[:width] < width
+          size[:height] = height if size[:height] < height
+
+          next size
+        end
+
+        return group_region_size[:width], group_region_size[:height]
+      end
+
+      def draw(prep, region, values)
         values ||= { }
         # 管理対象の各オブジェクトに対して描画を開始
-        @drawables.values.each do |drawable|
-          drawable_values = values[drawable.identifier] if values.has_key?(drawable.identifier)
+        drawable_items.each do |drawable|
+          if values.has_key?(drawable.identifier.to_sym)
+            drawable_values = values[drawable.identifier.to_sym]
+          else
+            drawable_values = { }
+          end
 
-          drawable.draw(pdf, page, region, drawable_values)
+          drawable.draw(prep, region, drawable_values)
         end
+      end
+
+      # 描画対象となる構成要素の一覧を返却
+      def drawable_items
+        return @drawables.values.map { |d|
+          case d
+          when Group
+            next nil
+          else
+            next d
+          end
+        }.compact
       end
     end
   end

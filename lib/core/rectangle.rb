@@ -70,31 +70,35 @@ module PREP # nodoc
         end
       end
 
+      def calculate_region(prep, region, value)
+        return @region.x + @region.width, @region.y + @region.height
+      end
+
       # 矩形の描画
-      def draw(pdf, page, region, values)
-        page.set_line_width(@line_width.to_f)
+      def draw(prep, region, values)
+        prep.current_page.set_line_width(@line_width.to_f)
         unless @line_color.white?
-          page.set_rgb_stroke(@line_color.red.to_f,
-                              @line_color.green.to_f,
-                              @line_color.blue.to_f)
+          prep.current_page.set_rgb_stroke(@line_color.red.to_f,
+                                           @line_color.green.to_f,
+                                           @line_color.blue.to_f)
         end
         unless @fill_color.white?
-          page.set_rgb_fill(@fill_color.red.to_f,
-                            @fill_color.green.to_f,
-                            @fill_color.blue.to_f)
+          prep.current_page.set_rgb_fill(@fill_color.red.to_f,
+                                         @fill_color.green.to_f,
+                                         @fill_color.blue.to_f)
         end
 
-        pos_x, pos_y = calculate_pos(page, region, @region.x, @region.y)
-        page.rectangle(pos_x, pos_y - @region.height, @region.width, @region.height)
+        pos_x, pos_y = calculate_pos(prep.current_page, region, @region.x, @region.y)
+        prep.current_page.rectangle(pos_x, pos_y - @region.height, @region.width, @region.height)
 
         if @fill_color.white?
           unless @line_color.white?
-            page.stroke
+            prep.current_page.stroke
           end
         elsif @line_color.white?
-          page.fill
+          prep.current_page.fill
         else
-          page.fill_stroke
+          prep.current_page.fill_stroke
         end
       end
     end
