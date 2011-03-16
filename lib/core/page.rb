@@ -30,10 +30,10 @@ module PREP # nodoc
         @size = SIZES[:a4]
         @orientation = ORIENTATIONS[:portrate]
         @margin = {
-          :top => 10,
-          :left => 10,
-          :bottom => 10,
-          :right => 10
+          :top => 0,
+          :left => 0,
+          :bottom => 0,
+          :right => 0
         }
         @header_height = 0
         @footer_height = 0
@@ -61,7 +61,7 @@ module PREP # nodoc
           next hash
         end
         if (sym_key_values.keys - @margin.keys).length.zero?
-          @margin.merge(values)
+          @margin.merge!(sym_key_values)
         else
           raise "Unknown margin keys (#{(sym_key_values.keys - @margin.keys).join(",")})."
         end

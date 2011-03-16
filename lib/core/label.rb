@@ -6,6 +6,7 @@
 require File.join(File.dirname(__FILE__), "drawable")
 require File.join(File.dirname(__FILE__), "color")
 require File.join(File.dirname(__FILE__), "region")
+require File.join(File.dirname(__FILE__), "..", "mm2pixcel")
 
 require "nkf"
 
@@ -32,8 +33,10 @@ module PREP # nodoc
         super(identifier)
         values = @@default_values.merge(key_string_to_symbol(values))
 
-        @region = Region.new(values[:region][:x], values[:region][:y],
-                             values[:region][:width], values[:region][:height])
+        @region = Region.new(values[:region][:x].mm2pixcel,
+                             values[:region][:y].mm2pixcel,
+                             values[:region][:width].mm2pixcel,
+                             values[:region][:height].mm2pixcel)
         if values[:label].nil?
           raise "Label string cannot be blank for \"#{identifier}\""
         else

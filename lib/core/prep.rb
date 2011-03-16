@@ -15,6 +15,7 @@ require File.join(File.dirname(__FILE__), "group")
 require File.join(File.dirname(__FILE__), "reference")
 require File.join(File.dirname(__FILE__), "region")
 require File.join(File.dirname(__FILE__), "page")
+require File.join(File.dirname(__FILE__), "..", "mm2pixcel")
 
 module PREP
   module Core
@@ -182,13 +183,17 @@ module PREP
             @page_config.orientation = Page::ORIENTATIONS[values["orientation"].to_sym]
           end
           if !values["margin"].nil?
-            @page_config.margin = values["margin"]
+            margin_values = values["margin"].keys.inject({ }) do |hash, key|
+              hash[key.to_sym] = values["margin"][key].mm2pixcel
+              next hash
+            end
+            @page_config.margin = margin_values
           end
           if !values["header_height"].nil?
-            @page_config.header_height = values["header_height"]
+            @page_config.header_height = values["header_height"].mm2pixcel
           end
           if !values["footer_height"].nil?
-            @page_config.footer_height = values["footer_height"]
+            @page_config.footer_height = values["footer_height"].mm2pixcel
           end
         end
 

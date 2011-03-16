@@ -6,8 +6,8 @@ page:
     left: 10
     bottom: 10
     right: 10
-  header_height: 10
-  footer_height: 10
+  header_height: 0
+  footer_height: 0
 content:
   type: group
   title:
@@ -74,3 +74,17 @@ content:
       red: 1
       green: 1
       blue: 1
+  rect1:
+    type: rectangle
+    region:
+      x: 0
+      y: 0
+      width: 10
+      height: 10
+  rect2:
+    type: rectangle
+    region:
+      x: 10
+      y: 10
+      width: 10
+      height: 10

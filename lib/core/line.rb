@@ -6,6 +6,7 @@
 require File.join(File.dirname(__FILE__), "drawable")
 require File.join(File.dirname(__FILE__), "color")
 require File.join(File.dirname(__FILE__), "point")
+require File.join(File.dirname(__FILE__), "..", "mm2pixcel")
 
 module PREP # nodoc
   module Core # nodoc
@@ -27,8 +28,8 @@ module PREP # nodoc
         super(identifier)
         values = @@default_values.merge(key_string_to_symbol(values))
 
-        @start_point = Point.new(values[:start][:x], values[:start][:y])
-        @end_point = Point.new(values[:end][:x], values[:end][:y])
+        @start_point = Point.new(values[:start][:x].mm2pixcel, values[:start][:y].mm2pixcel)
+        @end_point = Point.new(values[:end][:x].mm2pixcel, values[:end][:y].mm2pixcel)
         @color = Color.new(values[:color][:red], values[:color][:green], values[:color][:blue])
         self.width = values[:width]
         self.style = values[:style]

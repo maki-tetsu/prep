@@ -4,6 +4,7 @@
 # Copyright:: Copyright (c) 2011 maki-tetsu
 
 require File.join(File.dirname(__FILE__), "drawable")
+require File.join(File.dirname(__FILE__), "..", "mm2pixcel")
 
 module PREP # nodoc
   module Core # nodoc
@@ -29,9 +30,9 @@ module PREP # nodoc
         self.direction = values[:direction]
         @header_group = values[:header]
         @iterator_group = values[:iterator]
-        @gap = values[:gap]
+        @gap = values[:gap].mm2pixcel
         @footer_group = values[:footer]
-        @point = Point.new(values[:x], values[:y])
+        @point = Point.new(values[:x].mm2pixcel, values[:y].mm2pixcel)
       end
 
       def direction=(d)
