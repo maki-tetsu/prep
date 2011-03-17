@@ -6,18 +6,34 @@ page:
     left: 10
     bottom: 10
     right: 10
-  header_height: 15
+  header_height: 40
   footer_height: 0
 header:
   type: group
   title:
     type: label
     label: 文書タイトル
+    align: right
     region:
       x: 0
       y: 0
-      width: 50
+      width: 100
       height: 10
+    color:
+      red: 0
+      green: 1
+      blue: 0
+  title_rect:
+    type: rectangle
+    region:
+      x: 0
+      y: 0
+      width: 100
+      height: 10
+    fill_color:
+      red: 0
+      green: 0
+      blue: 0
 
 content:
   type: group
@@ -44,6 +60,7 @@ table_header:
   column01_label:
     type: label
     label: 日付
+    align: justify
     region:
       x: 0
       y: 0
@@ -59,6 +76,7 @@ table_header:
   column02_label:
     type: label
     label: 区分A
+    align: justify
     region:
       x: 0
       y: 10
@@ -74,6 +92,7 @@ table_header:
   column03_label:
     type: label
     label: 区分B
+    align: justify
     region:
       x: 0
       y: 20
@@ -89,6 +108,7 @@ table_header:
   column04_label:
     type: label
     label: 区分C
+    align: justify
     region:
       x: 0
       y: 30
@@ -106,6 +126,7 @@ table_content:
   column01_label:
     type: label
     label: 日付
+    align: center
     region:
       x: 0
       y: 0
@@ -121,6 +142,7 @@ table_content:
   column02_label:
     type: label
     label: 区分A
+    align: left
     region:
       x: 0
       y: 10
@@ -136,6 +158,7 @@ table_content:
   column03_label:
     type: label
     label: 区分B
+    align: center
     region:
       x: 0
       y: 20
@@ -151,6 +174,7 @@ table_content:
   column04_label:
     type: label
     label: 区分C
+    align: right
     region:
       x: 0
       y: 30

@@ -17,6 +17,7 @@ module PREP # nodoc
 
       # 初期化
       def initialize(identifier)
+        STDERR.puts("Initializing #{self.class}: #{identifier}") if ENV['DEBUG']
         @identifier = identifier
       end
 

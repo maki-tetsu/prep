@@ -15,13 +15,14 @@ module PREP # nodoc
     # 文字列描画構成要素クラス
     class Label < Drawable
       ALIGNS = {
-        :left   => "left",
-        :right  => "right",
-        :center => "center"
+        :left    => HPDFDoc::HPDF_TALIGN_LEFT,
+        :right   => HPDFDoc::HPDF_TALIGN_RIGHT,
+        :center  => HPDFDoc::HPDF_TALIGN_CENTER,
+        :justify => HPDFDoc::HPDF_TALIGN_JUSTIFY,
       }
 
       @@default_values = {
-        :align => ALIGNS[:left],
+        :align => "left",
         :font => "MS-Mincyo",
         :size => 12,
         :color => { :red => 0, :green => 0, :blue => 0 },
@@ -43,8 +44,8 @@ module PREP # nodoc
           @label = values[:label]
         end
 
-        if ALIGNS.values.include?(values[:align])
-          @align = values[:align]
+        if ALIGNS.keys.include?(values[:align].to_sym)
+          @align = ALIGNS[values[:align].to_sym]
         else
           raise "Unknown label alignment option \"#{values[:align]}\"."
         end
@@ -88,10 +89,12 @@ module PREP # nodoc
         font = prep.pdf.get_font(self.font, "90ms-RKSJ-H")
         page.begin_text
         page.set_rgb_fill(@color.red.to_f, @color.green.to_f, @color.blue.to_f)
-        pos_x, pos_y = calculate_pos(page, region, @region.x, @region.y)
-        page.move_text_pos(pos_x, pos_y - @region.height)
+        left, top = calculate_pos(page, region, @region.x, @region.y)
+        right, bottom = left + @region.width, top - @region.height
         page.set_font_and_size(font, @size)
-        page.show_text(NKF.nkf("--oc=cp932 -W8", string))
+        page.text_rect(left, top, right, bottom,
+                       NKF.nkf("--oc=cp932 -W8", string),
+                       @align)
         page.end_text
       end
     end

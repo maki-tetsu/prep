@@ -2,8 +2,10 @@ require File.join(File.dirname(__FILE__), "..", "lib", "prep")
 
 prep = PREP::Core::Prep.new("sample3.yml")
 values = {
+  :header => {
+    :title => "任意のタイトルさんだよー。 とても長い場合にどうなるのかを確認してみます。",
+  },
   :content => {
-    :title => "任意のタイトルさんだよー",
     :table => {
       :values => [
                   { :column01_label => "03/01", :column02_label => 102, :column03_label => 103, :column04_label => 104 },
