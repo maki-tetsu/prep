@@ -73,6 +73,21 @@ module PREP # nodoc
         @drawables[identifier.to_sym] = klass.new(identifier, config)
       end
 
+      # データセット雛形を生成
+      def generate_sample_dataset(prep)
+        dataset = { }
+        drawable_items.each do |drawable|
+          case drawable
+          when Loop, Group
+            dataset[drawable.identifier.to_sym] = drawable.generate_sample_dataset(prep)
+          when Label
+            dataset[drawable.identifier.to_sym] = drawable.label
+          end
+        end
+
+        return dataset
+      end
+
       # グループを構成する各要素が全体で占有する領域サイズを返却
       def calculate_region(prep, region, values)
         values ||= { }

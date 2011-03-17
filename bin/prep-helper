@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+require 'nkf'
+
+# OS 判定
+def is_win?
+  return RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|cygwin|bccwin/
+end
+
+# 文字列変換
+def conv(msg)
+  if is_win?
+    encoding = 'cp932'
+  else
+    encoding = 'utf8'
+  end
+
+  return NKF.nkf("--oc=#{encoding}", msg)
+end
+
+# usage
+def usage
+  puts conv("Usage: #{File.basename($0)} report_yaml_file_path")
+end
+
+# 文字コード指定(utf8 固定)
+$KCODE='u'
+
+# 引数判定
+# 引数は帳票定義ファイルのパスのみ
+if ARGV.size != 1
+  usage
+  exit
+end
+
+yaml_file_path = ARGV.shift
+
+unless File.exists?(yaml_file_path)
+  STDERR.puts(conv("帳票レイアウト定義ファイル「#{yaml_file_path}」が見つかりません"))
+  exit
+end
+
+require File.join(File.dirname(__FILE__), "..", "lib", "prep")
+prep = PREP::Core::Prep.new(yaml_file_path)
+require 'pp'
+pp prep.generate_sample_dataset
+
+exit

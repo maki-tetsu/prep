@@ -38,6 +38,21 @@ module PREP
         end
       end
 
+      # データセット雛形を生成して返却
+      def generate_sample_dataset
+        # ヘッダのデータセット生成
+        dataset = { }
+        if @content.has_identifier?(:header)
+          dataset[:header] = @content[:header].generate_sample_dataset(self)
+        end
+        dataset[:content] = @content[:content].generate_sample_dataset(self)
+        if @content.has_identifier?(:footer)
+          dataset[:footer] = @content[:footer].generate_sample_dataset(self)
+        end
+
+        return dataset
+      end
+
       # 帳票の生成
       def generate(output_file_path, values = { })
         @pdf = HPDFDoc.new

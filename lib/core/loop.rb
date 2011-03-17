@@ -46,6 +46,24 @@ module PREP # nodoc
         end
       end
 
+      # データセット雛形を生成
+      def generate_sample_dataset(prep)
+        dataset = { }
+
+        unless @header_group.nil?
+          header = prep.group(@header_group)
+          dataset[:header] = header.generate_sample_dataset(prep)
+        end
+        iterator = prep.group(@iterator_group)
+        dataset[:values] = [iterator.generate_sample_dataset(prep)]
+        unless @footer_group.nil?
+          footer = prep.group(@footer_group)
+          dataset[:footer] = footer.generate_sample_dataset(prep)
+        end
+
+        return dataset
+      end
+
       # データに依存してサイズが変化する可能性がある
       #
       # また、伸長方向 direction によって占有領域の計算方向が変化

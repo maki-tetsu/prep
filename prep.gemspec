@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{prep}
-  s.version = "0.0.2"
+  s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Tetsuhisa MAKINO"]
-  s.date = %q{2011-02-10}
+  s.date = %q{2011-03-17}
   s.description = %q{PREP is PDF Report generator depends on HPDF.}
   s.email = %q{tim.makino@gmail.com}
   s.extra_rdoc_files = [
@@ -25,11 +25,32 @@ Gem::Specification.new do |s|
     "README.rdoc",
     "Rakefile",
     "VERSION",
-    "examples/generate_guide_pdf.rb",
-    "examples/generate_report_sample.rb",
+    "examples/generate_group_sample.rb",
+    "examples/generate_sample.rb",
+    "examples/generate_sample2.rb",
+    "examples/generate_sample3.rb",
+    "examples/generate_sample4.rb",
+    "examples/generate_sample5.rb",
+    "examples/group_sample.yml",
     "examples/sample.yml",
+    "examples/sample2.yml",
+    "examples/sample3.yml",
+    "examples/sample5.yml",
+    "lib/core/color.rb",
+    "lib/core/drawable.rb",
+    "lib/core/group.rb",
+    "lib/core/label.rb",
+    "lib/core/line.rb",
+    "lib/core/loop.rb",
+    "lib/core/page.rb",
+    "lib/core/point.rb",
+    "lib/core/prep.rb",
+    "lib/core/rectangle.rb",
+    "lib/core/region.rb",
+    "lib/mm2pixcel.rb",
     "lib/prep.rb",
     "prep.gemspec",
+    "spec/component_spec.rb",
     "spec/prep_spec.rb",
     "spec/spec_helper.rb"
   ]
@@ -39,8 +60,14 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{PREP is PDF Report generator depends on HPDF.}
   s.test_files = [
-    "examples/generate_guide_pdf.rb",
-    "examples/generate_report_sample.rb",
+    "examples/generate_group_sample.rb",
+    "examples/generate_sample.rb",
+    "examples/generate_sample2.rb",
+    "examples/generate_sample3.rb",
+    "examples/generate_sample4.rb",
+    "examples/generate_sample5.rb",
+    "examples/generate_sample_dataset.rb",
+    "spec/component_spec.rb",
     "spec/prep_spec.rb",
     "spec/spec_helper.rb"
   ]
