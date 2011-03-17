@@ -48,7 +48,7 @@ module PREP # nodoc
       # データに依存してサイズが変化する可能性がある
       #
       # また、伸長方向 direction によって占有領域の計算方向が変化
-      def calculate_region(prep, region, value)
+      def calculate_region(prep, region, values)
         # リージョン補正
         current_region = region.dup
         current_region.x += point.x
