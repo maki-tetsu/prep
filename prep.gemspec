@@ -10,8 +10,10 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Tetsuhisa MAKINO"]
   s.date = %q{2011-03-17}
+  s.default_executable = %q{prep-helper}
   s.description = %q{PREP is PDF Report generator depends on HPDF.}
   s.email = %q{tim.makino@gmail.com}
+  s.executables = ["prep-helper"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.rdoc"
@@ -25,12 +27,14 @@ Gem::Specification.new do |s|
     "README.rdoc",
     "Rakefile",
     "VERSION",
+    "bin/prep-helper",
     "examples/generate_group_sample.rb",
     "examples/generate_sample.rb",
     "examples/generate_sample2.rb",
     "examples/generate_sample3.rb",
     "examples/generate_sample4.rb",
     "examples/generate_sample5.rb",
+    "examples/generate_sample_dataset.rb",
     "examples/group_sample.yml",
     "examples/sample.yml",
     "examples/sample2.yml",
