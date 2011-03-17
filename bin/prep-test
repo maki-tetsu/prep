@@ -41,7 +41,7 @@ unless File.exists?(yaml_file_path)
 end
 
 require File.join(File.dirname(__FILE__), "..", "lib", "prep")
-ENV['DEUBG'] = true
+ENV['DEBUG'] = 'true'
 prep = PREP::Core::Prep.new(yaml_file_path)
 require 'pp'
 values = prep.generate_sample_dataset
