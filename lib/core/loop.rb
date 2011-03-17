@@ -73,7 +73,8 @@ module PREP # nodoc
         # 繰り返し部分の領域サイズを計算
         unless @iterator_group.nil?
           iterator = prep.group(@iterator_group)
-          values[:values].each do |iterator_values|
+          values_values = values[:values] || []
+          values_values.each do |iterator_values|
             w, h = iterator.calculate_region(prep, current_region, iterator_values)
             # 描画したので、方向に応じてリージョン補正
             if @direction == DIRECTIONS[:horizontal] # 右方向
@@ -119,13 +120,13 @@ module PREP # nodoc
         current_region.height -= point.y
 
         # ヘッダブロック描画
-        current_region = draw_header(prep, page, current_region, values)
+        current_region = draw_header(prep, prep.current_page, current_region, values)
 
         # 繰り返しブロック描画
-        current_region = draw_iterator(prep, page, current_region, values)
+        current_region = draw_iterator(prep, prep.current_page, current_region, values)
 
         # フッタブロック描画
-        current_region = draw_footer(prep, page, current_region, values)
+        current_region = draw_footer(prep, prep.current_page, current_region, values)
       end
 
       private
