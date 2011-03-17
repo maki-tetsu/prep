@@ -1,16 +1,21 @@
-= prep
+= PREP
 
-Description goes here.
+PREP は PDF Reporter Generator です。
+帳票のレイアウト定義を YAML 形式ファイルで記述し、オブジェクトをロード、
+描画に必要な差し込み用データを実行時に与えることで、帳票 PDF を生成します。
 
-== Contributing to prep
- 
-* Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
-* Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it
-* Fork the project
-* Start a feature/bugfix branch
-* Commit and push until you are happy with your contribution
-* Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
-* Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
+PREP は PDF そのものの生成に HPDF[http://libharu.sourceforge.net/index.html] を
+利用しています。詳細な説明、構成要素の追加等についてはそちらを参照してください。
+
+== 基本的な考え方
+
+PREP は YAML 形式で帳票のレイアウトを規定します。
+PREP が捉える帳票の形は木構造となります。直線(Line)、矩形(Rectanble)、ラベル(Label)を
+基本的な構成要素と捉えます。
+
+（そのうち書きます）
+
+当面は examples を参考にしてください。
 
 == Copyright
 
