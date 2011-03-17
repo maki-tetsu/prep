@@ -123,7 +123,7 @@ module PREP # nodoc
           else
             next d
           end
-        }.compact
+        }.compact.sort
       end
     end
   end

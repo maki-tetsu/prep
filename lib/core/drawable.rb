@@ -13,17 +13,26 @@ module PREP # nodoc
     # Label, Line, Rectangle などの描画構成要素の基底クラス.
     # 描画に必要となる基本的な機能が実装されている.
     class Drawable
-      attr_reader :identifier
+      attr_reader :identifier, :layer
 
       # 初期化
-      def initialize(identifier)
+      def initialize(identifier, layer = 1)
         STDERR.puts("Initializing #{self.class}: #{identifier}") if ENV['DEBUG']
         @identifier = identifier
+        @layer = layer.to_i
       end
 
       # 描画領域計算
       def calculate_region(prep, region, values)
         raise NotImplementedError.new
+      end
+
+      # 比較メソッド
+      def <=>(other)
+        unless Drawable === other
+          raise ArgumentError.new
+        end
+        return @layer <=> other.layer
       end
 
       # 描画処理の呼び出し

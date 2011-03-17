@@ -20,13 +20,14 @@ module PREP # nodoc
         :color => { :red => 0, :green => 0, :blue => 0 },
         :width => 1,
         :style => STYLES[:solid],
+        :layer => 2,
       }
 
       attr_reader :start_point, :end_point, :color, :width, :style
 
       def initialize(identifier, values = { })
-        super(identifier)
         values = @@default_values.merge(key_string_to_symbol(values))
+        super(identifier, values[:layer])
 
         @start_point = Point.new(values[:start][:x].mm2pixcel, values[:start][:y].mm2pixcel)
         @end_point = Point.new(values[:end][:x].mm2pixcel, values[:end][:y].mm2pixcel)

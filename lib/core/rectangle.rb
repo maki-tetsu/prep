@@ -26,13 +26,14 @@ module PREP # nodoc
         :line_style   => STYLES[:solid],
         :fill_pattern => FILL_PATTERNS[:flat],
         :fill_color   => { :red => 1, :green => 1, :blue => 1 },
+        :layer        => 1,
       }
 
       attr_reader :region, :line_color, :line_width, :line_style, :fill_pattern, :fill_color
 
       def initialize(identifier, values = { })
-        super(identifier)
         values = @@default_values.merge(key_string_to_symbol(values))
+        super(identifier, values[:layer])
 
         @region = Region.new(values[:region][:x].mm2pixcel,
                              values[:region][:y].mm2pixcel,

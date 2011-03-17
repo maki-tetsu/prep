@@ -19,14 +19,15 @@ module PREP # nodoc
         :direction => DIRECTIONS[:vertical],
         :gap => 0,
         :page_break => false,
+        :layer => 1,
       }
 
       attr_reader :direction, :gap, :header_group, :iterator_group, :footer_group, :point, :page_break
 
       def initialize(identifier, values = { })
-        super(identifier)
-
         values = @@default_values.merge(key_string_to_symbol(values))
+
+        super(identifier, values[:layer])
 
         self.direction = values[:direction]
         @header_group = values[:header]

@@ -26,13 +26,14 @@ module PREP # nodoc
         :font => "MS-Mincyo",
         :size => 12,
         :color => { :red => 0, :green => 0, :blue => 0 },
+        :layer => 3,
       }
 
       attr_reader :region, :label, :align, :font, :color, :size
 
       def initialize(identifier, values = { })
-        super(identifier)
         values = @@default_values.merge(key_string_to_symbol(values))
+        super(identifier, values[:layer])
 
         @region = Region.new(values[:region][:x].mm2pixcel,
                              values[:region][:y].mm2pixcel,
