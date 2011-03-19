@@ -45,6 +45,10 @@ module PREP # nodoc
           raise RegionHeightOverflowError.new("Region height must be grater than zero.")
         end
       end
+
+      def to_s
+        "[x=#{x},y=#{y},w=#{width},h=#{height}]"
+      end
     end
   end
 end

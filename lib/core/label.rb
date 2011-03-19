@@ -66,7 +66,11 @@ module PREP # nodoc
       end
 
       # 幅と高さを返却
-      def calculate_region(prep, region, value)
+      def calculate_region(prep, region, value, stop_on_drawable = nil)
+        if self === stop_on_drawable
+          raise ReRenderJump.new(region)
+        end
+        puts "Calculate region for #{self.class}: #{self.identifier} region: #{region}" if ENV["DEBUG"]
         ret_region = Region.new(0, 0,
                                 region.width - (@region.x + @region.width),
                                 region.height - (@region.y + @region.height))
@@ -74,9 +78,10 @@ module PREP # nodoc
       end
 
       # 指定された領域を元に再計算して描画を実施
-      #
-      # TODO align 指定が効かない
-      def draw(prep, page, region, value)
+      def draw(prep, region, value, stop_on_drawable = nil)
+        if self === stop_on_drawable
+          raise ReRenderJump.new(region)
+        end
         STDERR.puts("Draw on #{self.class} #{self.identifier}") if ENV['DEBUG']
         # 領域判定
         calculate_region(prep, region, value)
@@ -88,15 +93,14 @@ module PREP # nodoc
         end
         # 文字列の描画
         font = prep.pdf.get_font(self.font, "90ms-RKSJ-H")
-        page.begin_text
-        page.set_rgb_fill(@color.red.to_f, @color.green.to_f, @color.blue.to_f)
-        left, top = calculate_pos(page, region, @region.x, @region.y)
+        prep.current_page.begin_text
+        prep.current_page.set_rgb_fill(@color.red.to_f, @color.green.to_f, @color.blue.to_f)
+        left, top = calculate_pos(prep.current_page, region, @region.x, @region.y)
         right, bottom = left + @region.width, top - @region.height
-        page.set_font_and_size(font, @size)
-        page.text_rect(left, top, right, bottom,
-                       NKF.nkf("--oc=cp932 -W8", string),
-                       @align)
-        page.end_text
+        prep.current_page.set_font_and_size(font, @size)
+        prep.current_page.text_rect(left, top, right, bottom,
+                                    NKF.nkf("--oc=cp932 -W8", string), @align)
+        prep.current_page.end_text
       end
     end
   end

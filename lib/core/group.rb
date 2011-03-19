@@ -54,10 +54,25 @@ module PREP # nodoc
         case config["type"]
         when "label"
           klass = Label
+          @drawables.values.each do |drawable|
+            if Loop === drawable
+              raise "Group already has Loop!!"
+            end
+          end
         when "line"
           klass = Line
+          @drawables.values.each do |drawable|
+            if Loop === drawable
+              raise "Group already has Loop!!"
+            end
+          end
         when "rectangle"
           klass = Rectangle
+          @drawables.values.each do |drawable|
+            if Loop === drawable
+              raise "Group already has Loop!!"
+            end
+          end
         when "group"
           # global でのみグループ定義を許可
           unless global
@@ -66,6 +81,9 @@ module PREP # nodoc
           klass = Group
         when "loop"
           klass = Loop
+          unless @drawables.size.zero?
+            raise "Group has only one loop!!"
+          end
         else
           raise "Unknown type expression \"#{config["type"]}\"."
         end
@@ -89,7 +107,11 @@ module PREP # nodoc
       end
 
       # グループを構成する各要素が全体で占有する領域サイズを返却
-      def calculate_region(prep, region, values)
+      def calculate_region(prep, region, values, stop_on_drawable = nil)
+        if self === stop_on_drawable
+          raise ReRenderJump.new(region)
+        end
+        puts "Calculate region for #{self.class}: #{self.identifier} region: #{region}" if ENV["DEBUG"]
         values ||= { }
 
         # 各構成要素の描画領域を計算して最大の領域を計算、width, height のみを利用
@@ -100,7 +122,7 @@ module PREP # nodoc
             drawable_values = { }
           end
 
-          width, height = drawable.calculate_region(prep, region, drawable_values)
+          width, height = drawable.calculate_region(prep, region, drawable_values, stop_on_drawable)
 
           size[:width] = width if size[:width] < width
           size[:height] = height if size[:height] < height
@@ -114,7 +136,10 @@ module PREP # nodoc
         return group_region_size[:width], group_region_size[:height]
       end
 
-      def draw(prep, page, region, values)
+      def draw(prep, region, values, stop_on_drawable = nil)
+        if self === stop_on_drawable
+          raise ReRenderJump.new(region)
+        end
         STDERR.puts("Draw on #{self.class} #{self.identifier}") if ENV['DEBUG']
         values ||= { }
         # 管理対象の各オブジェクトに対して描画を開始
@@ -125,7 +150,7 @@ module PREP # nodoc
             drawable_values = { }
           end
 
-          drawable.draw(prep, page, region, drawable_values)
+          drawable.draw(prep, region, drawable_values, stop_on_drawable)
         end
       end
 

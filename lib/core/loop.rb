@@ -19,10 +19,10 @@ module PREP # nodoc
         :direction => DIRECTIONS[:vertical],
         :gap => 0,
         :page_break => false,
-        :layer => 1,
+        :layer => 4,
       }
 
-      attr_reader :direction, :gap, :header_group, :iterator_group, :footer_group, :point, :page_break
+      attr_reader :direction, :gap, :header_group, :iterator_group, :footer_group, :point, :page_break, :width, :height
 
       def initialize(identifier, values = { })
         values = @@default_values.merge(key_string_to_symbol(values))
@@ -65,87 +65,76 @@ module PREP # nodoc
       end
 
       # データに依存してサイズが変化する可能性がある
-      #
-      # また、伸長方向 direction によって占有領域の計算方向が変化
-      def calculate_region(prep, region, values)
+      def calculate_region(prep, region, values, stop_on_drawable = nil)
+        if self === stop_on_drawable
+          raise ReRenderJump.new(region)
+        end
+        puts "Calculate region for #{self.class}: #{self.identifier} region: #{region}" if ENV["DEBUG"]
         # リージョン補正
-        current_region = region.dup
-        current_region.x += point.x
-        current_region.y += point.y
-        current_region.width -= point.x
-        current_region.height -= point.y
+        current_region = fit_region(region)
+        # 描画計算の初期位置を保持
+        @initial_calculate_region = current_region.dup
 
         # ヘッダの領域サイズを計算
-        unless @header_group.nil?
-          header = prep.group(@header_group)
-          w, h = header.calculate_region(prep, current_region, values[:header])
-          # 描画したので、方向に応じてリージョン補正
-          if @direction == DIRECTIONS[:horizontal] # 右方向
-            current_region.x += w + @gap
-            current_region.width -= w + @gap
-          else # if @direction == DIRECTIONS[:vertical] # 下方向
-            current_region.y += h + @gap
-            current_region.height -= h + @gap
-          end
-        end
+        current_region = calculate_header_region(prep, current_region, values, stop_on_drawable)
+        puts "Header:\t#{current_region}" if ENV["DEBUG"]
 
         # 繰り返し部分の領域サイズを計算
-        unless @iterator_group.nil?
-          iterator = prep.group(@iterator_group)
-          values_values = values[:values] || []
-          values_values.each do |iterator_values|
-            w, h = iterator.calculate_region(prep, current_region, iterator_values)
-            # 描画したので、方向に応じてリージョン補正
-            if @direction == DIRECTIONS[:horizontal] # 右方向
-              current_region.x += w + @gap
-              current_region.width -= w + @gap
-            else # if @direction == DIRECTIONS[:vertical] # 下方向
-              current_region.y += h + @gap
-              current_region.height -= h + @gap
-            end
-          end
-        end
+        current_region = calculate_iterator_region(prep, current_region, values, stop_on_drawable)
+        puts "Iterator:\t#{current_region}" if ENV["DEBUG"]
 
         # フッタの領域サイズを計算
-        unless @footer_group.nil?
-          footer = prep.group(@footer_group)
-          w, h = footer.calculate_region(prep, region, values[:footer])
-          # 描画したので、方向に応じてリージョン補正
-          if @direction == DIRECTIONS[:horizontal] # 右方向
-            current_region.x += w
-            current_region.width -= w
-          else # if @direction == DIRECTIONS[:vertical] # 下方向
-            current_region.y += h
-            current_region.height -= h
-          end
-        end
+        current_region = calculate_footer_region(prep, current_region, values, stop_on_drawable)
+        puts "Footer:\t#{current_region}" if ENV["DEBUG"]
 
         # 最終的にリージョン補正位置から必要な領域を計算
         # 元のリージョン範囲から最終的に残っているリージョン範囲を減算すればよい
         ret_region = Region.new(0, 0,
                                 region.width - current_region.width,
                                 region.height - current_region.height)
+
+        # 進行方向じゃない方向に対しての差分は別途取得
+        if @direction == DIRECTIONS[:horizontal]
+          ret_region.height = @height
+        else # if @direction == DIRECTIONS[:vertical]
+          ret_region.width = @width
+        end
+
         return ret_region.width, ret_region.height
       end
 
-      # 実際の描画を実施
-      def draw(prep, page, region, values)
-        STDERR.puts("Draw on #{self.class} #{self.identifier}") if ENV['DEBUG']
-        # リージョン補正
+      # リージョン補正
+      #
+      # 相対位置情報を元にリージョンを補正して返却
+      def fit_region(region)
         current_region = region.dup
         current_region.x += point.x
         current_region.y += point.y
         current_region.width -= point.x
         current_region.height -= point.y
 
+        return current_region
+      end
+
+      # 実際の描画を実施
+      def draw(prep, region, values, stop_on_drawable = nil)
+        if self === stop_on_drawable
+          raise ReRenderJump.new(region)
+        end
+        STDERR.puts("Draw on #{self.class} #{self.identifier}") if ENV['DEBUG']
+        # リージョン補正
+        current_region = fit_region(region)
+        # 描画計算の初期位置を保持
+        @initial_draw_region = current_region.dup
+
         # ヘッダブロック描画
-        current_region = draw_header(prep, prep.current_page, current_region, values)
+        current_region = draw_header(prep, current_region, values, stop_on_drawable)
 
         # 繰り返しブロック描画
-        current_region = draw_iterator(prep, prep.current_page, current_region, values)
+        current_region = draw_iterator(prep, current_region, values, stop_on_drawable)
 
         # フッタブロック描画
-        current_region = draw_footer(prep, prep.current_page, current_region, values)
+        current_region = draw_footer(prep, current_region, values, stop_on_drawable)
       end
 
       private
@@ -153,11 +142,15 @@ module PREP # nodoc
       # ヘッダ構成要素を描画するためのメソッド
       #
       # 描画後に新しい region を返却
-      def draw_header(prep, page, region, values)
+      def draw_header(prep, region, values, stop_on_drawable = nil)
         unless @header_group.nil?
           header = prep.group(@header_group)
-          w, h = header.calculate_region(prep, region, values[:header])
-          header.draw(prep, page, region, values[:header])
+          w, h = rewind_current_page(prep) do
+            header.calculate_region(prep, region, values[:header], stop_on_drawable)
+          end
+          rewind_current_page(prep, self.direction) do
+            header.draw(prep, region, values[:header], stop_on_drawable)
+          end
           if @direction == DIRECTIONS[:horizontal] # 右方向
             region.x += w + @gap
             region.width -= w + @gap
@@ -170,28 +163,70 @@ module PREP # nodoc
         return region
       end
 
+      # ヘッダ構成要素の描画領域を計算するためのメソッド
+      def calculate_header_region(prep, region, values, stop_on_drawable = nil)
+        unless @header_group.nil?
+          header = prep.group(@header_group)
+          w, h = header.calculate_region(prep, region, values[:header], stop_on_drawable)
+          if @direction == DIRECTIONS[:horizontal] # 右方向
+            region.x += w + @gap
+            region.width -= w + @gap
+            @height ||= h
+            @height = h if @height < h
+          else # if @direction == DIRECTIONS[:vertical] # 下方向
+            region.y += h + @gap
+            region.height -= h + @gap
+            @width ||= w
+            @width = w if @width < w
+          end
+        end
+
+        return region
+      end
+
       # 繰返し構成要素を描画するためのメソッド
-      def draw_iterator(prep, page, region, values)
+      def draw_iterator(prep, region, values, stop_on_drawable = nil)
         iterator = prep.group(@iterator_group)
         values[:values].each do |iterator_values|
           begin
-            w, h = iterator.calculate_region(prep, region, iterator_values)
-            iterator.draw(prep, page, region, iterator_values)
+            w, h = rewind_current_page(prep) do
+              iterator.calculate_region(prep, region, iterator_values, stop_on_drawable)
+            end
+            rewind_current_page(prep, self.direction) do
+              iterator.draw(prep, region, iterator_values, stop_on_drawable)
+            end
             # 描画したので、方向に応じてリージョン補正
             if @direction == DIRECTIONS[:horizontal] # 右方向
               region.x += w + @gap
               region.width -= w + @gap
+              @height ||= h
+              @height = h if @height < h
             else # if @direction == DIRECTIONS[:vertical] # 下方向
               region.y += h + @gap
               region.height -= h + @gap
+              @width ||= w
+              @width = w if @width < w
             end
           rescue RegionWidthOverflowError
             # 幅オーバーフロー時のページ切り替え対応
             if @page_break && @direction == DIRECTIONS[:horizontal]
-              page = prep.add_page
-              region = prep.page_content_region
-              # ヘッダを再描画
-              region = draw_header(prep, page, region, values)
+              next_page_exist = prep.exists_move_to_page?(1, 0)
+
+              page = prep.move_page_to(1, 0)
+              if next_page_exist
+                region = @initial_draw_region.dup
+              else
+                region = prep.page_content_region
+                # 過去を再描画
+                begin
+                  prep.group(:content).draw(prep, region, prep.values[:content], self)
+                rescue ReRenderJump => e
+                  region = fit_region(e.region)
+                else
+                  raise "ReRedering Error!!"
+                end
+              end
+              region = draw_header(prep, region, values, stop_on_drawable)
               # リトライ
               retry
             end
@@ -199,10 +234,97 @@ module PREP # nodoc
           rescue RegionHeightOverflowError
             # 高さオーバーフロー時のページ切り替え対応
             if @page_break && @direction == DIRECTIONS[:vertical]
-              page = prep.add_page
-              region = prep.page_content_region
+              next_page_exist = prep.exists_move_to_page?(0, 1)
+              page = prep.move_page_to(0, 1)
+              if next_page_exist
+                region = @initial_draw_region.dup
+              else
+                region = prep.page_content_region
+                # 過去を再描画
+                begin
+                  prep.group(:content).draw(prep, region, prep.values[:content], self)
+                rescue ReRenderJump => e
+                  region = fit_region(e.region)
+                else
+                  raise "ReRendering Error!!"
+                end
+              end
               # ヘッダを再描画
-              region = draw_header(prep, page, region, values)
+              region = draw_header(prep, region, values, stop_on_drawable)
+              # リトライ
+              retry
+            end
+            raise
+          end
+        end
+
+        return region
+      end
+
+      # 繰返し構成要素の描画領域を計算するためのメソッド
+      def calculate_iterator_region(prep, region, values, stop_on_drawable = nil)
+        iterator = prep.group(@iterator_group)
+        values[:values].each do |iterator_values|
+          begin
+            w, h = iterator.calculate_region(prep, region, iterator_values, stop_on_drawable)
+            # 描画したので、方向に応じてリージョン補正
+            if @direction == DIRECTIONS[:horizontal] # 右方向
+              region.x += w + @gap
+              region.width -= w + @gap
+              @height ||= h
+              @height = h if @height < h
+            else # if @direction == DIRECTIONS[:vertical] # 下方向
+              region.y += h + @gap
+              region.height -= h + @gap
+              @width ||= w
+              @width = w if @width < w
+            end
+          rescue RegionWidthOverflowError
+            # 幅オーバーフロー時のページ切り替え対応
+            if @page_break && @direction == DIRECTIONS[:horizontal]
+              next_page_exist = prep.exists_move_to_page?(1, 0)
+
+              page = prep.move_page_to(1, 0)
+              if next_page_exist
+                region = @initial_calculate_region.dup
+              else
+                region = prep.page_content_region
+                # 過去を再計算
+                begin
+                  prep.group(:content).calculate_region(prep, region, prep.values[:content], self)
+                rescue ReRenderJump => e
+                  region = fit_region(e.region)
+                else
+                  raise "ReRendering Error!!"
+                end
+              end
+              # ヘッダを再計算
+              region = calculate_header_region(prep, region, values, stop_on_drawable)
+              # リトライ
+              retry
+            end
+            raise
+          rescue RegionHeightOverflowError
+            # 高さオーバーフロー時のページ切り替え対応
+            if @page_break && @direction == DIRECTIONS[:vertical]
+              next_page_exist = prep.exists_move_to_page?(0, 1)
+
+              page = prep.move_page_to(0, 1)
+              if next_page_exist
+                region = @initial_calculate_region.dup
+              else
+                region = prep.page_content_region
+                # 過去を再計算
+                begin
+                  prep.group(:content).calculate_region(prep, region, prep.values[:content], self)
+                rescue ReRenderJump => e
+                  region = fit_region(e.region)
+                else
+                  raise "ReRendering Error!!"
+                end
+              end
+              # ヘッダを再計算
+              region = calculate_header_region(prep, region, values, stop_on_drawable)
               # リトライ
               retry
             end
@@ -214,32 +336,135 @@ module PREP # nodoc
       end
 
       # フッタ構成要素を描画するためのメソッド
-      def draw_footer(prep, page, region, values)
+      def draw_footer(prep, region, values, stop_on_drawable = nil)
         unless @footer_group.nil?
           begin
             footer = prep.group(@footer_group)
-            w, h = footer.calculate_region(prep, region, values[:footer])
-            footer.draw(prep, page, region, values[:footer])
+            w, h = rewind_current_page(prep) do
+              footer.calculate_region(prep, region, values[:footer], stop_on_drawable)
+            end
+            rewind_current_page(prep, self.direction) do
+              footer.draw(prep, region, values[:footer], stop_on_drawable)
+            end
             if @direction == DIRECTIONS[:horizontal] # 右方向
               region.x += w
               region.width -= w
+              @height ||= h
+              @height = h if @height < h
             else # if @direction == DIRECTIONS[:vertical] # 下方向
               region.y += h
               region.height -= h
+              @width ||= w
+              @width = w if @width < w
             end
           rescue RegionWidthOverflowError
             if @page_break && @direction == DIRECTIONS[:horizontal]
-              page = prep.add_page
-              region = prep.page_content_region
-              region = draw_header(prep, page, region, values)
+              next_page_exist = prep.exists_move_to_page?(1, 0)
+
+              page = prep.move_page_to(1, 0)
+              if next_page_exist
+                region = @initial_draw_region.dup
+              else
+                region = prep.page_content_region
+                # 過去を再描画
+                begin
+                  prep.group(:content).draw(prep, region, prep.values[:content], self)
+                rescue ReRenderJump => e
+                  region = fit_region(e.region)
+                else
+                  raise "ReRendering Error!!"
+                end
+              end
+              region = draw_header(prep, region, values, stop_on_drawable)
               retry
             end
             raise
           rescue RegionHeightOverflowError
             if @page_break && @direction == DIRECTIONS[:vertical]
-              page = prep.add_page
-              region = prep.page_content_region
-              region = draw_header(prep, page, region, values)
+              next_page_exist = prep.exists_move_to_page?(0, 1)
+
+              page = prep.move_page_to(0, 1)
+              if next_page_exist
+                region = @initial_draw_region.dup
+              else
+                region = prep.page_content_region
+                # 過去を再描画
+                begin
+                  prep.group(:content).draw(prep, region, prep.values[:content], self)
+                rescue ReRenderJump => e
+                  region = fit_region(e.region)
+                else
+                  raise "ReRendering Error!!"
+                end
+              end
+              region = draw_header(prep, region, values, stop_on_drawable)
+              retry
+            end
+            raise
+          end
+        end
+
+        return region
+      end
+
+      # フッタ構成要素の描画領域を計算するためのメソッド
+      def calculate_footer_region(prep, region, values, stop_on_drawable = nil)
+        unless @footer_group.nil?
+          begin
+            footer = prep.group(@footer_group)
+            w, h = footer.calculate_region(prep, region, values[:footer], stop_on_drawable)
+            if @direction == DIRECTIONS[:horizontal] # 右方向
+              region.x += w
+              region.width -= w
+              @height ||= h
+              @height = h if @height < h
+            else # if @direction == DIRECTIONS[:vertical] # 下方向
+              region.y += h
+              region.height -= h
+              @width ||= w
+              @width = w if @width < w
+            end
+          rescue RegionWidthOverflowError
+            if @page_break && @direction == DIRECTIONS[:horizontal]
+              next_page_exist = prep.exists_move_to_page?(1, 0)
+
+              page = prep.move_page_to(1, 0)
+              if next_page_exist
+                region = @initial_calculate_region.dup
+              else
+                region = prep.page_content_region
+                # 過去を再計算
+                begin
+                  prep.group(:content).calculate_region(prep, region, prep.values[:content], self)
+                rescue ReRenderJump => e
+                  region = fit_region(e.region)
+                else
+                  raise "ReRendering Error!!"
+                end
+              end
+              region = calculate_header_region(prep, region, values, stop_on_drawable)
+              retry
+            end
+            raise
+          rescue RegionHeightOverflowError
+            if @page_break && @direction == DIRECTIONS[:vertical]
+              next_page_exist = prep.exists_move_to_page?(0, 1)
+
+              page = prep.move_page_to(0, 1)
+              if next_page_exist
+                region = @initial_calculate_region.dup
+              else
+                region = prep.page_content_region
+                # 過去を再計算
+                begin
+                  prep.group(:content).calculate_region(prep, region, prep.values[:content], self)
+                rescue ReRenderJump => e
+                  region = fit_region(e.region)
+                else
+                  raise "ReRendering Error!!"
+                end
+              end
+              region = calculate_header_region(prep, region, values, stop_on_drawable)
               retry
             end
             raise

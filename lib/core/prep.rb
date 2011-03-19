@@ -20,7 +20,7 @@ module PREP
   module Core
     # PREP の中心クラス
     class Prep
-      attr_reader :pdf, :pages
+      attr_reader :pdf, :pages, :page_pos_x, :page_pos_y, :values
 
       # 初期化
       #
@@ -55,13 +55,14 @@ module PREP
 
       # 帳票の生成
       def generate(output_file_path, values = { })
+        # 再描画用に初期値を保持
+        @values = values.dup
         @pdf = HPDFDoc.new
         # 日本語対応
         @pdf.use_jp_fonts
         @pdf.use_jp_encodings
-        @pages = []
-        # 1ページ目の追加
-        add_page
+        # ページの初期化
+        initialize_pages
 
         draw_contents(values)
         draw_headers(values)
@@ -69,8 +70,27 @@ module PREP
 
         # 指定されたファイルへの書込
         @pdf.save_to_file(output_file_path)
-      # rescue => e
-      #   puts "Error occured!!\n#{e}"
+      rescue => e
+        @pdf.save_to_file(output_file_path) if ENV["DEBUG"]
+        puts "Error occured!!\n#{e}"
+        raise e
+      end
+
+      # ページの初期化
+      def initialize_pages
+        # 一次元配列
+        @pages = []
+        # 二次元配列
+        @flat_pages = []
+        # ページの作成
+        page = generate_page
+        # 1ページ目の登録
+        @pages << page
+        @flat_pages = [[page]] # [0][0] 位置への追加
+        # 現在のページの位置情報を初期化
+        @page_pos_x, @page_pos_y = 0, 0
+
+        return page
       end
 
       # コンテンツの埋め込み
@@ -78,7 +98,7 @@ module PREP
         content = @content[:content]
 
         # 描画領域を含めて描画開始
-        content.draw(self, current_page, page_content_region, values[:content])
+        content.draw(self, page_content_region, values[:content])
       end
 
       # ヘッダの埋め込み
@@ -87,8 +107,12 @@ module PREP
 
         header = @content[:header]
 
-        @pages.each do |page|
-          header.draw(self, page, page_header_region, values[:header])
+        # 全てのページに対してインデックスを切り替えながら実行
+        @flat_pages.each_with_index do |row_pages, y|
+          row_pages.each_with_index do |page, x|
+            self.current_page = { :x => x, :y => y }
+            header.draw(self, page_header_region, values[:header])
+          end
         end
       end
 
@@ -97,16 +121,57 @@ module PREP
         return unless @content.has_identifier?(:footer)
 
         footer = @content[:footer]
-        @pages.each do |page|
-          footer.draw(self, page, page_footer_region, values[:footer])
+
+        # 全てのページに対してインデックスを切り替えながら実行
+        @flat_pages.each_with_index do |row_pages, y|
+          row_pages.each_with_index do |page, x|
+            self.current_page = x, y
+            footer.draw(self, page_header_region, values[:header])
+          end
         end
       end
 
-      # ページの追加
+      # ページの移動および追加
       #
-      # 新規ページを追加し、参照を返却
-      def add_page
-        @pages << (page = @pdf.add_page)
+      # 指定された位置への移動に際してページが存在しなければページを追加
+      def move_page_to(x, y)
+        puts "[#{@page_pos_x}:#{@page_pos_y}] => [#{@page_pos_x + x}:#{@page_pos_y + y}]" if ENV["DEBUG"]
+        @page_pos_x, @page_pos_y = @page_pos_x + x, @page_pos_y + y
+
+        @flat_pages[@page_pos_y] ||= []
+        if @flat_pages[@page_pos_y][@page_pos_x].nil?
+          @flat_pages[@page_pos_y][@page_pos_x] = (page = generate_page)
+          @pages << page
+        end
+
+        print_flat_pages if ENV["DEBUG"]
+        #gets
+
+        return @flat_pages[@page_pos_y][@page_pos_x]
+      end
+
+      # 移動先のページが存在するかどうかをチェック
+      def exists_move_to_page?(x, y)
+        x += @page_pos_x
+        y += @page_pos_y
+
+        return exists_page?(x, y)
+      end
+
+      # 指定されたページが存在するかどうかをチェック
+      def exists_page?(x, y)
+        if @flat_pages[y].nil?
+          return false
+        elsif @flat_pages[y][x].nil?
+          return false
+        else
+          return true
+        end
+      end
+
+      # ページオブジェクトの作成とページ設定
+      def generate_page
+        page = @pdf.add_page
         page.set_size(@page_config.size, @page_config.orientation)
 
         return page
@@ -119,7 +184,37 @@ module PREP
 
       # 現在描画中のページインスタンスを返却
       def current_page
-        return @pages.last
+        return @flat_pages[@page_pos_y][@page_pos_x]
+      end
+
+      # 現在のページを強制的に変更
+      #
+      # 存在しないページへの移動は不可(例外)
+      # 引数の形式はハッシュ: Ex.) { :x => 0, :y => 0 }
+      def current_page=(pos)
+        if exists_page?(pos[:x], pos[:y])
+          puts "[#{@page_pos_x}:#{@page_pos_y}] => [#{pos[:x]}:#{pos[:y]}]" if ENV["DEBUG"]
+          @page_pos_x, @page_pos_y = pos[:x], pos[:y]
+          print_flat_pages if ENV["DEBUG"]
+          return current_page
+        else
+          print_flat_pages if ENV["DEBUG"]
+          raise "Unknown page index [#{pos[:x]},#{pos[:y]}]."
+        end
+      end
+
+      # ページ構成を模式印字するデバッグ用メソッド
+      def print_flat_pages
+        @flat_pages.each_with_index do |flat_page, y|
+          flat_page.each_with_index do |one_page, x|
+            char = one_page.nil? ? "?" : "."
+            if x == page_pos_x && y == page_pos_y
+              char = '!'
+            end
+            STDERR.write("[#{char}]")
+          end
+          STDERR.write("\n")
+        end
       end
 
       # コンテンツ描画領域の取得

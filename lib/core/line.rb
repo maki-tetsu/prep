@@ -52,7 +52,11 @@ module PREP # nodoc
         end
       end
 
-      def calculate_region(prep, region, value)
+      def calculate_region(prep, region, value, stop_on_drawable = nil)
+        if self === stop_on_drawable
+          raise ReRenderJump.new(region)
+        end
+        puts "Calculate region for #{self.class}: #{self.identifier} region: #{region}" if ENV["DEBUG"]
         width = [@start_point.x, @end_point.x].max
         height = [@start_point.y, @end_point.y].max
 
@@ -63,24 +67,27 @@ module PREP # nodoc
       end
 
       # 直線の描画
-      def draw(prep, page, region, values)
+      def draw(prep, region, values, stop_on_drawable = nil)
+        if self === stop_on_drawable
+          raise ReRenderJump.new(region)
+        end
         STDERR.puts("Draw on #{self.class} #{self.identifier}") if ENV['DEBUG']
         # 領域判定
         calculate_region(prep, region, values)
         # 幅指定
-        page.set_line_width(@width)
+        prep.current_page.set_line_width(@width)
         # 色指定
-        page.set_rgb_stroke(@color.red.to_f,
-                            @color.green.to_f,
-                            @color.blue.to_f)
+        prep.current_page.set_rgb_stroke(@color.red.to_f,
+                                         @color.green.to_f,
+                                         @color.blue.to_f)
         # 開始位置へ移動
-        start_x, start_y = calculate_pos(page, region, @start_point.x.to_f, @start_point.y.to_f)
-        end_x, end_y = calculate_pos(page, region, @end_point.x.to_f, @end_point.y.to_f)
-        page.move_to(start_x, start_y)
+        start_x, start_y = calculate_pos(prep.current_page, region, @start_point.x.to_f, @start_point.y.to_f)
+        end_x, end_y = calculate_pos(prep.current_page, region, @end_point.x.to_f, @end_point.y.to_f)
+        prep.current_page.move_to(start_x, start_y)
         # 終了位置へ向けて直線描画
-        page.line_to(end_x, end_y)
+        prep.current_page.line_to(end_x, end_y)
         # 実描画
-        page.stroke
+        prep.current_page.stroke
       end
     end
   end
