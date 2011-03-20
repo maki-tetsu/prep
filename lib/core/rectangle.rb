@@ -27,9 +27,10 @@ module PREP # nodoc
         :fill_pattern => FILL_PATTERNS[:flat],
         :fill_color   => { :red => 1, :green => 1, :blue => 1 },
         :layer        => 1,
+        :expand       => false,
       }
 
-      attr_reader :region, :line_color, :line_width, :line_style, :fill_pattern, :fill_color
+      attr_reader :region, :line_color, :line_width, :line_style, :fill_pattern, :fill_color, :expand
 
       def initialize(identifier, values = { })
         values = @@default_values.merge(key_string_to_symbol(values))
@@ -48,6 +49,13 @@ module PREP # nodoc
         @fill_color = Color.new(values[:fill_color][:red],
                                 values[:fill_color][:green],
                                 values[:fill_color][:blue])
+        @expand = values[:expand]
+      end
+
+      def expand_region(setting)
+        @expand_region = @region.dup
+        @expand_region.width = setting[:width] if setting[:width]
+        @expand_region.height = setting[:height] if setting[:height]
       end
 
       def line_width=(w)
@@ -104,7 +112,11 @@ module PREP # nodoc
                                          @fill_color.green.to_f,
                                          @fill_color.blue.to_f)
         end
-
+        region_backup = @region.dup
+        if @expand_region
+          @region = @expand_region.dup
+          @expand_region = nil
+        end
         pos_x, pos_y = calculate_pos(prep.current_page, region, @region.x, @region.y)
         prep.current_page.rectangle(pos_x, pos_y - @region.height, @region.width, @region.height)
 
@@ -117,6 +129,7 @@ module PREP # nodoc
         else
           prep.current_page.fill_stroke
         end
+        @region = region_backup
       end
     end
   end

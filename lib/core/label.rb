@@ -27,9 +27,10 @@ module PREP # nodoc
         :size => 12,
         :color => { :red => 0, :green => 0, :blue => 0 },
         :layer => 3,
+        :expand => false,
       }
 
-      attr_reader :region, :label, :align, :font, :color, :size
+      attr_reader :region, :label, :align, :font, :color, :size, :expand
 
       def initialize(identifier, values = { })
         values = @@default_values.merge(key_string_to_symbol(values))
@@ -63,6 +64,13 @@ module PREP # nodoc
         else
           @size = values[:size]
         end
+        @expand = values[:expand]
+      end
+
+      def expand_region(setting)
+        @expand_region = @region.dup
+        @expand_region.width = setting[:width] if setting[:width]
+        @expand_region.height = setting[:height] if setting[:height]
       end
 
       # 幅と高さを返却
@@ -95,12 +103,18 @@ module PREP # nodoc
         font = prep.pdf.get_font(self.font, "90ms-RKSJ-H")
         prep.current_page.begin_text
         prep.current_page.set_rgb_fill(@color.red.to_f, @color.green.to_f, @color.blue.to_f)
+        region_backup = @region.dup
+        if @expand_region
+          @region = @expand_region.dup
+          @expand_region = nil
+        end
         left, top = calculate_pos(prep.current_page, region, @region.x, @region.y)
         right, bottom = left + @region.width, top - @region.height
         prep.current_page.set_font_and_size(font, @size)
         prep.current_page.text_rect(left, top, right, bottom,
                                     NKF.nkf("--oc=cp932 -W8", string), @align)
         prep.current_page.end_text
+        @region = region_backup
       end
     end
   end

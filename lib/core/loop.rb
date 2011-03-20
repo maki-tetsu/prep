@@ -127,6 +127,39 @@ module PREP # nodoc
         # 描画計算の初期位置を保持
         @initial_draw_region = current_region.dup
 
+        # 描画に先立ち領域拡張設定を実施
+        # ループ要素の描画領域を算出（事前計算）
+        calculate_region(prep, region.dup, values)
+        # 領域に関する情報を取得
+        expand_setting = { }
+        if !@page_break
+          if @direction == DIRECTIONS[:horizontal]
+            expand_setting[:height] = @height
+          else # if @direction == DIRECTIONS[:vertical]
+            expand_setting[:width] = @width
+          end
+        end
+        # ヘッダおよびフッタの子に関してワンタイム設定を実施
+        unless @header_group.nil?
+          header = prep.group(@header_group)
+          header.drawable_items.each do |drawable|
+            if Label === drawable || Rectangle === drawable
+              if drawable.expand
+                drawable.expand_region(expand_setting)
+              end
+            end
+          end
+        end
+        unless @footer_group.nil?
+          footer = prep.group(@footer_group)
+          footer.drawable_items.each do |drawable|
+            if Label === drawable || Rectangle === drawable
+              if drawable.expand
+                drawable.expand_region(expand_setting)
+              end
+            end
+          end
+        end
         # ヘッダブロック描画
         current_region = draw_header(prep, current_region, values, stop_on_drawable)
 

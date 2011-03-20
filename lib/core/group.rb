@@ -13,7 +13,17 @@ module PREP # nodoc
   module Core # nodoc
     # 呼び出し可能グループの定義
     class Group < Drawable
+      @@allow_all = false
+
       attr_reader :drawables
+
+      def self.allow_all
+        return @@allow_all
+      end
+
+      def self.allow_all=(v)
+        @@allow_all = !!v
+      end
 
       # 初期化
       def initialize(identifier = "main", values = { })
@@ -54,23 +64,29 @@ module PREP # nodoc
         case config["type"]
         when "label"
           klass = Label
-          @drawables.values.each do |drawable|
-            if Loop === drawable
-              raise "Group already has Loop!!"
+          unless @@allow_all
+            @drawables.values.each do |drawable|
+              if Loop === drawable
+                raise "Group already has Loop!!"
+              end
             end
           end
         when "line"
           klass = Line
-          @drawables.values.each do |drawable|
-            if Loop === drawable
-              raise "Group already has Loop!!"
+          unless @@allow_all
+            @drawables.values.each do |drawable|
+              if Loop === drawable
+                raise "Group already has Loop!!"
+              end
             end
           end
         when "rectangle"
           klass = Rectangle
-          @drawables.values.each do |drawable|
-            if Loop === drawable
-              raise "Group already has Loop!!"
+          unless @@allow_all
+            @drawables.values.each do |drawable|
+              if Loop === drawable
+                raise "Group already has Loop!!"
+              end
             end
           end
         when "group"
@@ -81,8 +97,10 @@ module PREP # nodoc
           klass = Group
         when "loop"
           klass = Loop
-          unless @drawables.size.zero?
-            raise "Group has only one loop!!"
+          unless @@allow_all
+            unless @drawables.size.zero?
+              raise "Group has only one loop!!"
+            end
           end
         else
           raise "Unknown type expression \"#{config["type"]}\"."
