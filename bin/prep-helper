@@ -40,6 +40,7 @@ unless File.exists?(yaml_file_path)
 end
 
 require File.join(File.dirname(__FILE__), "..", "lib", "prep")
+PREP::Core::Group.allow_all = true
 prep = PREP::Core::Prep.new(yaml_file_path)
 require 'pp'
 pp prep.generate_sample_dataset
