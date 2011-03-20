@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{prep}
-  s.version = "0.1.0"
+  s.version = "0.1.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Tetsuhisa MAKINO"]
-  s.date = %q{2011-03-17}
+  s.date = %q{2011-03-20}
   s.description = %q{PREP is PDF Report generator depends on HPDF.}
   s.email = %q{tim.makino@gmail.com}
   s.executables = ["prep-test", "prep-helper"]
@@ -34,12 +34,14 @@ Gem::Specification.new do |s|
     "examples/generate_sample3.rb",
     "examples/generate_sample4.rb",
     "examples/generate_sample5.rb",
+    "examples/generate_sample6.rb",
     "examples/generate_sample_dataset.rb",
     "examples/group_sample.yml",
     "examples/sample.yml",
     "examples/sample2.yml",
     "examples/sample3.yml",
     "examples/sample5.yml",
+    "examples/sample6.yml",
     "lib/core/color.rb",
     "lib/core/drawable.rb",
     "lib/core/group.rb",
@@ -70,6 +72,7 @@ Gem::Specification.new do |s|
     "examples/generate_sample3.rb",
     "examples/generate_sample4.rb",
     "examples/generate_sample5.rb",
+    "examples/generate_sample6.rb",
     "examples/generate_sample_dataset.rb",
     "spec/component_spec.rb",
     "spec/prep_spec.rb",
