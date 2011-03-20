@@ -129,7 +129,9 @@ module PREP # nodoc
 
         # 描画に先立ち領域拡張設定を実施
         # ループ要素の描画領域を算出（事前計算）
-        calculate_region(prep, region.dup, values)
+        rewind_current_page(prep) do
+          calculate_region(prep, region.dup, values)
+        end
         # 領域に関する情報を取得
         expand_setting = { }
         if !@page_break
