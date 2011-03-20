@@ -321,6 +321,11 @@ module PREP
       def group(group_identifiy)
         return @content[group_identifiy]
       end
+
+      # 指定されたグループ識別子の存在確認
+      def has_group?(group_identifiy)
+        return @content.drawables.has_key?(group_identifiy.to_sym)
+      end
     end
   end
 end

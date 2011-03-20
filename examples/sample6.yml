@@ -1,6 +1,11 @@
 page:
   size: a4
   orientation: portrait
+  margin:
+    top: 10
+    left: 10
+    bottom: 10
+    right: 10
 content:
   type: group
   out_table:
@@ -9,9 +14,10 @@ content:
     y: 0
     direction: vertical
     page_break: false
-    gap: 2
+    gap: 0
     header: out_table_header
     iterator: out_table_content
+    footer: out_table_footer
 
 # 外側のテーブル定義
 out_table_content:
@@ -22,8 +28,10 @@ out_table_content:
     y: 0
     direction: horizontal
     page_break: false
-    gap: 1
+    gap: 0
+    header: inner_table_header
     iterator: inner_table_content
+    footer: inner_table_footer
 out_table_header:
   type: group
   out_table_header_label:
@@ -34,7 +42,7 @@ out_table_header:
     region:
       x: 0
       y: 0
-      width: 50
+      width: 30
       height: 10
   out_table_header_rect:
     type: rectangle
@@ -42,7 +50,27 @@ out_table_header:
     region:
       x: 0
       y: 0
-      width: 50
+      width: 30
+      height: 10
+out_table_footer:
+  type: group
+  out_table_footer_label:
+    type: label
+    label: 外側のテーブルフッタ
+    align: center
+    expand: true
+    region:
+      x: 0
+      y: 0
+      width: 30
+      height: 10
+  out_table_header_rect:
+    type: rectangle
+    expand: true
+    region:
+      x: 0
+      y: 0
+      width: 30
       height: 10
 
 # 内側のテーブル定義
@@ -54,12 +82,46 @@ inner_table_content:
     region:
       x: 0
       y: 0
-      width: 50
+      width: 30
       height: 10
   inner_table_content_column01_rect:
     type: rectangle
     region:
       x: 0
       y: 0
-      width: 50
+      width: 30
+      height: 10
+inner_table_header:
+  type: group
+  inner_table_header_title:
+    type: label
+    label: 内側のテーブルヘッダ
+    region:
+      x: 0
+      y: 0
+      width: 30
+      height: 10
+  inner_table_header_column01_rect:
+    type: rectangle
+    region:
+      x: 0
+      y: 0
+      width: 30
+      height: 10
+inner_table_footer:
+  type: group
+  inner_table_footer_column01_label:
+    type: label
+    label: 内側のテーブルフッタ
+    region:
+      x: 0
+      y: 0
+      width: 30
+      height: 10
+  inner_table_footer_column01_rect:
+    type: rectangle
+    region:
+      x: 0
+      y: 0
+      width: 30
       height: 10

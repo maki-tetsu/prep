@@ -8,10 +8,28 @@ values = {
       :values => [
                   {
                     :inner_table => {
-                      :header => { :header_title => "hogehoge" },
+                      :header => { :inner_table_header_title => "First" },
                       :values => [
                                   { :inner_table_content_column01_label => "1-1" },
                                   { :inner_table_content_column01_label => "1-2" },
+                                  ],
+                    },
+                  },
+                  {
+                    :inner_table => {
+                      :header => { :inner_table_header_title => "Second" },
+                      :values => [
+                                  { :inner_table_content_column01_label => "2-1" },
+                                  { :inner_table_content_column01_label => "2-2" },
+                                  ],
+                    },
+                  },
+                  {
+                    :inner_table => {
+                      :header => { :inner_table_header_title => "Third" },
+                      :values => [
+                                  { :inner_table_content_column01_label => "3-1" },
+                                  { :inner_table_content_column01_label => "3-2" },
                                   ],
                     },
                   },

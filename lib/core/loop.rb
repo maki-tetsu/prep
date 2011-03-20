@@ -185,11 +185,17 @@ module PREP # nodoc
             header.draw(prep, region, values[:header], stop_on_drawable)
           end
           if @direction == DIRECTIONS[:horizontal] # 右方向
-            region.x += w + @gap
-            region.width -= w + @gap
+            if (has_iterator_group?(prep) && !values[:values].nil? && !values[:values].size.zero?) || has_footer_group?(prep)
+              w += @gap
+            end
+            region.x += w
+            region.width -= w
           else # if @direction == DIRECTIONS[:vertical] # 下方向
-            region.y += h + @gap
-            region.height -= h + @gap
+            if (has_iterator_group?(prep) && !values[:values].nil? && !values[:values].size.zero?) || has_footer_group?(prep)
+              h += @gap
+            end
+            region.y += h
+            region.height -= h
           end
         end
 
@@ -202,13 +208,19 @@ module PREP # nodoc
           header = prep.group(@header_group)
           w, h = header.calculate_region(prep, region, values[:header], stop_on_drawable)
           if @direction == DIRECTIONS[:horizontal] # 右方向
-            region.x += w + @gap
-            region.width -= w + @gap
+            if (has_iterator_group?(prep) && !values[:values].nil? && !values[:values].size.zero?) || has_footer_group?(prep)
+              w += @gap
+            end
+            region.x += w
+            region.width -= w
             @height ||= h
             @height = h if @height < h
           else # if @direction == DIRECTIONS[:vertical] # 下方向
-            region.y += h + @gap
-            region.height -= h + @gap
+            if (has_iterator_group?(prep) && !values[:values].nil? && !values[:values].size.zero?) || has_footer_group?(prep)
+              h += @gap
+            end
+            region.y += h
+            region.height -= h
             @width ||= w
             @width = w if @width < w
           end
@@ -220,7 +232,7 @@ module PREP # nodoc
       # 繰返し構成要素を描画するためのメソッド
       def draw_iterator(prep, region, values, stop_on_drawable = nil)
         iterator = prep.group(@iterator_group)
-        values[:values].each do |iterator_values|
+        values[:values].each_with_index do |iterator_values, index|
           begin
             w, h = rewind_current_page(prep) do
               iterator.calculate_region(prep, region, iterator_values, stop_on_drawable)
@@ -230,13 +242,19 @@ module PREP # nodoc
             end
             # 描画したので、方向に応じてリージョン補正
             if @direction == DIRECTIONS[:horizontal] # 右方向
-              region.x += w + @gap
-              region.width -= w + @gap
+              if has_footer_group?(prep) || (values[:values].size > index + 1)
+                w += @gap
+              end
+              region.x += w
+              region.width -= w
               @height ||= h
               @height = h if @height < h
             else # if @direction == DIRECTIONS[:vertical] # 下方向
-              region.y += h + @gap
-              region.height -= h + @gap
+              if has_footer_group?(prep) || (values[:values].size > index + 1)
+                h += @gap
+              end
+              region.y += h
+              region.height -= h
               @width ||= w
               @width = w if @width < w
             end
@@ -297,18 +315,24 @@ module PREP # nodoc
       # 繰返し構成要素の描画領域を計算するためのメソッド
       def calculate_iterator_region(prep, region, values, stop_on_drawable = nil)
         iterator = prep.group(@iterator_group)
-        values[:values].each do |iterator_values|
+        values[:values].each_with_index do |iterator_values, index|
           begin
             w, h = iterator.calculate_region(prep, region, iterator_values, stop_on_drawable)
             # 描画したので、方向に応じてリージョン補正
             if @direction == DIRECTIONS[:horizontal] # 右方向
-              region.x += w + @gap
-              region.width -= w + @gap
+              if has_footer_group?(prep) || (values[:values].size > index + 1)
+                w += @gap
+              end
+              region.x += w
+              region.width -= w
               @height ||= h
               @height = h if @height < h
             else # if @direction == DIRECTIONS[:vertical] # 下方向
-              region.y += h + @gap
-              region.height -= h + @gap
+              if has_footer_group?(prep) || (values[:values].size > index + 1)
+                h += @gap
+              end
+              region.y += h
+              region.height -= h
               @width ||= w
               @width = w if @width < w
             end
@@ -505,6 +529,33 @@ module PREP # nodoc
         end
 
         return region
+      end
+
+      # ヘッダグループの設定有無を確認
+      def has_header_group?(prep)
+        if @header_group.nil?
+          return false
+        else
+          return prep.has_group?(@header_group)
+        end
+      end
+
+      # 繰返しグループの設定有無を確認
+      def has_iterator_group?(prep)
+        if @iterator_group.nil?
+          return false
+        else
+          return prep.has_group?(@iterator_group)
+        end
+      end
+
+      # フッタグループの設定有無を確認
+      def has_footer_group?(prep)
+        if @footer_group.nil?
+          return false
+        else
+          return prep.has_group?(@footer_group)
+        end
       end
     end
   end
