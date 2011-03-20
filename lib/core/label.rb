@@ -95,10 +95,13 @@ module PREP # nodoc
         calculate_region(prep, region, value)
         # 文字列指定があるかを確認
         if value.nil? || value.to_s == ""
-          string = self.label
+          string = self.label.dup
         else
           string = value.to_s
         end
+        # 文字列指定に変数がある場合は判定
+        string.gsub!("[[[current_page_number]]]", prep.current_page_number.to_s)
+        string.gsub!("[[[total_page_count]]]", prep.total_pages.to_s)
         # 文字列の描画
         font = prep.pdf.get_font(self.font, "90ms-RKSJ-H")
         prep.current_page.begin_text

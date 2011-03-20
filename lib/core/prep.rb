@@ -125,8 +125,8 @@ module PREP
         # 全てのページに対してインデックスを切り替えながら実行
         @flat_pages.each_with_index do |row_pages, y|
           row_pages.each_with_index do |page, x|
-            self.current_page = x, y
-            footer.draw(self, page_header_region, values[:header])
+            self.current_page = { :x => x, :y => y }
+            footer.draw(self, page_footer_region, values[:footer])
           end
         end
       end
@@ -145,7 +145,6 @@ module PREP
         end
 
         print_flat_pages if ENV["DEBUG"]
-        #gets
 
         return @flat_pages[@page_pos_y][@page_pos_x]
       end
@@ -185,6 +184,16 @@ module PREP
       # 現在描画中のページインスタンスを返却
       def current_page
         return @flat_pages[@page_pos_y][@page_pos_x]
+      end
+
+      # 現在の通しページ番号を返却
+      def current_page_number
+        @pages.each_with_index do |page, index|
+          if page === current_page
+            return index + 1
+          end
+        end
+        raise "Unknown Page instance \"#{page}\"."
       end
 
       # 現在のページを強制的に変更

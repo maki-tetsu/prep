@@ -7,7 +7,7 @@ page:
     bottom: 10
     right: 10
   header_height: 40
-  footer_height: 0
+  footer_height: 5
 header:
   type: group
   title:
@@ -34,6 +34,30 @@ header:
       red: 0
       green: 0
       blue: 0
+  page_labe:
+    type: label
+    label: "[[[total_page_count]]] ページ中の [[[current_page_number]]] ページ目です。"
+    align: right
+    region:
+      x: 100
+      y: 0
+      width: 100
+      height: 10
+    color:
+      red: 0.3
+      green: 0.3
+      blue: 0.3
+footer:
+  type: group
+  page_label:
+    type: label
+    label: "[[[current_page_number]]] / [[[total_page_count]]]"
+    align: left
+    region:
+      x: 0
+      y: 0
+      width: 200
+      height: 5
 
 content:
   type: group
