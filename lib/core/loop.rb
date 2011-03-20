@@ -127,14 +127,14 @@ module PREP # nodoc
         # 描画計算の初期位置を保持
         @initial_draw_region = current_region.dup
 
-        # 描画に先立ち領域拡張設定を実施
-        # ループ要素の描画領域を算出（事前計算）
-        rewind_current_page(prep) do
-          calculate_region(prep, region.dup, values)
-        end
         # 領域に関する情報を取得
         expand_setting = { }
         if !@page_break
+          # 描画に先立ち領域拡張設定を実施
+          # ループ要素の描画領域を算出（事前計算）
+          rewind_current_page(prep) do
+            calculate_region(prep, region.dup, values)
+          end
           if @direction == DIRECTIONS[:horizontal]
             expand_setting[:height] = @height
           else # if @direction == DIRECTIONS[:vertical]
