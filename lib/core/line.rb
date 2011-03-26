@@ -88,6 +88,7 @@ module PREP # nodoc
         prep.current_page.line_to(end_x, end_y)
         # 実描画
         prep.current_page.stroke
+        prep.current_page.drawed = true
       end
     end
   end

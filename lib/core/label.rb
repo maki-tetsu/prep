@@ -118,6 +118,7 @@ module PREP # nodoc
                                     NKF.nkf("--oc=cp932 -W8", string), @align)
         prep.current_page.end_text
         @region = region_backup
+        prep.current_page.drawed = true
       end
     end
   end

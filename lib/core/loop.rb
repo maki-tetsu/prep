@@ -67,6 +67,8 @@ module PREP # nodoc
       # データに依存してサイズが変化する可能性がある
       def calculate_region(prep, region, values, stop_on_drawable = nil)
         if self === stop_on_drawable
+          puts "STOPPING on #{stop_on_drawable.identifier}" if ENV["DEBUG"]
+          gets if ENV["DEBUG"]
           raise ReRenderJump.new(region)
         end
         puts "Calculate region for #{self.class}: #{self.identifier} region: #{region}" if ENV["DEBUG"]
@@ -87,20 +89,35 @@ module PREP # nodoc
         current_region = calculate_footer_region(prep, current_region, values, stop_on_drawable)
         puts "Footer:\t#{current_region}" if ENV["DEBUG"]
 
-        # 最終的にリージョン補正位置から必要な領域を計算
-        # 元のリージョン範囲から最終的に残っているリージョン範囲を減算すればよい
-        ret_region = Region.new(0, 0,
-                                region.width - current_region.width,
-                                region.height - current_region.height)
+        begin
+          # 最終的にリージョン補正位置から必要な領域を計算
+          # 元のリージョン範囲から最終的に残っているリージョン範囲を減算すればよい
+          ret_region = Region.new(0, 0,
+                                  region.width - current_region.width,
+                                  region.height - current_region.height)
 
-        # 進行方向じゃない方向に対しての差分は別途取得
-        if @direction == DIRECTIONS[:horizontal]
-          ret_region.height = @height
-        else # if @direction == DIRECTIONS[:vertical]
-          ret_region.width = @width
+          # 進行方向じゃない方向に対しての差分は別途取得
+          if @direction == DIRECTIONS[:horizontal]
+            ret_region.height = @height
+          else # if @direction == DIRECTIONS[:vertical]
+            ret_region.width = @width
+          end
+
+          return ret_region.width, ret_region.height
+        rescue RegionWidthOverflowError, RegionHeightOverflowError => e
+          # これは負の数を返却してやれば上位では単純な加算しか起きない
+          w, h = region.width - current_region.width, region.height - current_region.height
+          if @direction == DIRECTIONS[:horizontal]
+            h = @height
+          else # if @direction == DIRECTIONS[:vertical]
+            w = @width
+          end
+
+          puts "Inner page break!! width: #{w}, height: #{h}" if ENV["DEBUG"]
+          gets if ENV["DEBUG"]
+
+          return w, h
         end
-
-        return ret_region.width, ret_region.height
       end
 
       # リージョン補正
@@ -119,6 +136,8 @@ module PREP # nodoc
       # 実際の描画を実施
       def draw(prep, region, values, stop_on_drawable = nil)
         if self === stop_on_drawable
+          puts "STOPPING on #{stop_on_drawable.identifier}" if ENV["DEBUG"]
+          gets if ENV["DEBUG"]
           raise ReRenderJump.new(region)
         end
         STDERR.puts("Draw on #{self.class} #{self.identifier}") if ENV['DEBUG']
@@ -288,6 +307,7 @@ module PREP # nodoc
             # 高さオーバーフロー時のページ切り替え対応
             if @page_break && @direction == DIRECTIONS[:vertical]
               next_page_exist = prep.exists_move_to_page?(0, 1)
+
               page = prep.move_page_to(0, 1)
               if next_page_exist
                 region = @initial_draw_region.dup

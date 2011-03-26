@@ -133,7 +133,7 @@ module PREP # nodoc
         values ||= { }
 
         # 各構成要素の描画領域を計算して最大の領域を計算、width, height のみを利用
-        group_region_size = drawable_items.inject({ :width => 0, :height => 0 }) do |size, drawable|
+        group_region_size = drawable_items.inject({ }) do |size, drawable|
           if values.has_key?(drawable.identifier.to_sym)
             drawable_values = values[drawable.identifier.to_sym]
           else
@@ -142,11 +142,16 @@ module PREP # nodoc
 
           width, height = drawable.calculate_region(prep, region, drawable_values, stop_on_drawable)
 
+          size[:width] ||= width
+          size[:height] ||= height
           size[:width] = width if size[:width] < width
           size[:height] = height if size[:height] < height
 
           next size
         end
+
+        group_region_size[:width] ||= 0
+        group_region_size[:height] ||= 0
 
         ret_region = Region.new(0, 0,
                                 region.width - group_region_size[:width],

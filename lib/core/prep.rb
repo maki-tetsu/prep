@@ -14,6 +14,7 @@ require File.join(File.dirname(__FILE__), "rectangle")
 require File.join(File.dirname(__FILE__), "group")
 require File.join(File.dirname(__FILE__), "region")
 require File.join(File.dirname(__FILE__), "page")
+require File.join(File.dirname(__FILE__), "page_ext")
 require File.join(File.dirname(__FILE__), "..", "mm2pixcel")
 
 module PREP
@@ -154,7 +155,7 @@ module PREP
         x += @page_pos_x
         y += @page_pos_y
 
-        return exists_page?(x, y)
+        return exists_and_drawed_page?(x, y)
       end
 
       # 指定されたページが存在するかどうかをチェック
@@ -165,6 +166,15 @@ module PREP
           return false
         else
           return true
+        end
+      end
+
+      # 指定されたページが存在し描画済みであるかどうかをチェック
+      def exists_and_drawed_page?(x, y)
+        if exists_page?(x, y)
+          return @flat_pages[y][x].drawed?
+        else
+          return false
         end
       end
 
@@ -224,6 +234,7 @@ module PREP
           end
           STDERR.write("\n")
         end
+        gets if ENV["DEBUG"]
       end
 
       # コンテンツ描画領域の取得

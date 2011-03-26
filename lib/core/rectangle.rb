@@ -130,6 +130,7 @@ module PREP # nodoc
           prep.current_page.fill_stroke
         end
         @region = region_backup
+        prep.current_page.drawed = true
       end
     end
   end
