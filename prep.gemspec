@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{prep}
-  s.version = "0.2.0"
+  s.version = "0.2.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Tetsuhisa MAKINO"]
-  s.date = %q{2011-03-20}
+  s.date = %q{2011-03-26}
   s.description = %q{PREP is PDF Report generator depends on HPDF.}
   s.email = %q{tim.makino@gmail.com}
   s.executables = ["prep-test", "prep-helper"]
@@ -49,6 +49,7 @@ Gem::Specification.new do |s|
     "lib/core/line.rb",
     "lib/core/loop.rb",
     "lib/core/page.rb",
+    "lib/core/page_ext.rb",
     "lib/core/point.rb",
     "lib/core/prep.rb",
     "lib/core/rectangle.rb",
