@@ -19,6 +19,17 @@ require File.join(File.dirname(__FILE__), "..", "mm2pixcel")
 
 module PREP
   module Core
+    # PREP 用例外
+    #
+    # 帳票生成時に発生するあらゆる例外を補足して再発生させる際に利用
+    class PrepError < StandardError
+      # 元々のエラー
+      attr_reader :original_error
+
+      def initialize(error)
+        @original_error = error
+      end
+    end
     # PREP の中心クラス
     class Prep
       attr_reader :pdf, :pages, :page_pos_x, :page_pos_y, :values
@@ -74,7 +85,7 @@ module PREP
       rescue => e
         @pdf.save_to_file(output_file_path) if ENV["DEBUG"]
         puts "Error occured!!\n#{e}"
-        raise e
+        raise PrepError.new(e)
       end
 
       # ページの初期化
