@@ -245,9 +245,35 @@ module PREP # nodoc
             @width ||= w
             @width = w if @width < w
           end
+          # イテーレーションが一度も描画できない場合は進行方向に対するページ切り替え例外
+          unless at_least_one_time_iteration?(prep, region, values)
+            if @direction == DIRECTIONS[:horizontal]
+              raise RegionWidthOverflowError.new
+            else # if @direction == DIRECTIONS[:vertical]
+              raise RegionHeightOverflowError.new
+            end
+          end
         end
 
         return region
+      end
+
+      # 最低一回はイテーレーションループが描画可能であることを確認
+      def at_least_one_time_iteration?(prep, region, values)
+        # 現在のページ番号を確保
+        page_pos_x, page_pos_y = prep.page_pos_x, prep.page_pos_y
+        # 一回分のデータでイテーレーションの領域計算を実施
+        calculate_iterator_region(prep, region.dup, { :values => [values[:values].first] })
+        # 進行方向へのページ切り替えが発生したかを判定
+        if @direction == DIRECTIONS[:horizontal]
+          # X 方向へのページ切り替えが発生しているのでイテーレーション一回の描画不可
+          return false if page_pos_x != prep.page_pos_x
+        else # if @direction == DIRECTIONS[:vertical]
+          # Y 方向へのページ切り替えが発生しているのでイテーレーション一回の描画不可
+          return false if page_pos_y != prep.page_pos_y
+        end
+        # ページ切り替えが無いので描画可能
+        return true
       end
 
       # 繰返し構成要素を描画するためのメソッド
