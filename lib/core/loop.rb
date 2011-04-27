@@ -20,9 +20,10 @@ module PREP # nodoc
         :gap => 0,
         :page_break => false,
         :layer => 4,
+        :allow_header_split => true,
       }
 
-      attr_reader :direction, :gap, :header_group, :iterator_group, :footer_group, :point, :page_break, :width, :height
+      attr_reader :direction, :gap, :header_group, :iterator_group, :footer_group, :point, :page_break, :width, :height, :allow_header_split
 
       def initialize(identifier, values = { })
         values = @@default_values.merge(key_string_to_symbol(values))
@@ -36,6 +37,7 @@ module PREP # nodoc
         @footer_group = values[:footer]
         @point = Point.new(values[:x].mm2pixcel, values[:y].mm2pixcel)
         @page_break = values[:page_break]
+        @allow_header_split = values[:allow_header_split]
       end
 
       def direction=(d)
@@ -245,12 +247,19 @@ module PREP # nodoc
             @width ||= w
             @width = w if @width < w
           end
-          # イテーレーションが一度も描画できない場合は進行方向に対するページ切り替え例外
-          unless at_least_one_time_iteration?(prep, region, values)
-            if @direction == DIRECTIONS[:horizontal]
-              raise RegionWidthOverflowError.new
-            else # if @direction == DIRECTIONS[:vertical]
-              raise RegionHeightOverflowError.new
+          # ヘッダ取り残しを許可するかどうかを判定
+          unless @allow_header_split
+            # イテーレーションが一度も描画できない場合は進行方向に対するページ切り替え例外
+            drawabled = rewind_current_page(prep) do # ページ設定巻き戻し用ブロック付きメソッド
+              at_least_one_time_iteration?(prep, region, values)
+            end
+            # 描画不可の場合は強制ページ切り替え
+            unless drawabled
+              if @direction == DIRECTIONS[:horizontal]
+                raise RegionWidthOverflowError.new
+              else # if @direction == DIRECTIONS[:vertical]
+                raise RegionHeightOverflowError.new
+              end
             end
           end
         end
