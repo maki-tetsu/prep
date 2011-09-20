@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Loop クラスのソースファイル
 # Author:: maki-tetsu
 # Date:: 2011/03/11
@@ -21,9 +22,11 @@ module PREP # nodoc
         :page_break => false,
         :layer => 4,
         :allow_header_split => true,
+        :fixed_times => nil,
+        :at_least_one => false,
       }
 
-      attr_reader :direction, :gap, :header_group, :iterator_group, :footer_group, :point, :page_break, :width, :height, :allow_header_split
+      attr_reader :direction, :gap, :header_group, :iterator_group, :footer_group, :point, :page_break, :width, :height, :allow_header_split, :fixed_times, :at_least_one
 
       def initialize(identifier, values = { })
         values = @@default_values.merge(key_string_to_symbol(values))
@@ -38,6 +41,8 @@ module PREP # nodoc
         @point = Point.new(values[:x].mm2pixcel, values[:y].mm2pixcel)
         @page_break = values[:page_break]
         @allow_header_split = values[:allow_header_split]
+        @fixed_times = values[:fixed_times]
+        @at_least_one = !!values[:at_least_one]
       end
 
       def direction=(d)
@@ -57,7 +62,12 @@ module PREP # nodoc
           dataset[:header] = header.generate_sample_dataset(prep)
         end
         iterator = prep.group(@iterator_group)
-        dataset[:values] = [iterator.generate_sample_dataset(prep)]
+        dataset[:values] =
+          [
+           iterator.generate_sample_dataset(prep),
+           iterator.generate_sample_dataset(prep),
+           iterator.generate_sample_dataset(prep),
+          ]
         unless @footer_group.nil?
           footer = prep.group(@footer_group)
           dataset[:footer] = footer.generate_sample_dataset(prep)
@@ -288,7 +298,20 @@ module PREP # nodoc
       # 繰返し構成要素を描画するためのメソッド
       def draw_iterator(prep, region, values, stop_on_drawable = nil)
         iterator = prep.group(@iterator_group)
-        values[:values].each_with_index do |iterator_values, index|
+        # 固定繰り返し時のエラー回避用
+        if @at_least_one
+          values[:values] ||= [nil]
+        else
+          values[:values] ||= []
+        end
+        if !@fixed_times.nil? && !(values[:values].size % @fixed_times).zero?
+          iterator_times = ((values[:values].size / @fixed_times) + 1) * @fixed_times
+        else
+          iterator_times = values[:values].size
+        end
+        iterator_times.times do |index|
+          iterator_values = values[:values][index]
+          iterator_values ||= { }
           begin
             w, h = rewind_current_page(prep) do
               iterator.calculate_region(prep, region, iterator_values, stop_on_drawable)
@@ -372,7 +395,20 @@ module PREP # nodoc
       # 繰返し構成要素の描画領域を計算するためのメソッド
       def calculate_iterator_region(prep, region, values, stop_on_drawable = nil)
         iterator = prep.group(@iterator_group)
-        values[:values].each_with_index do |iterator_values, index|
+        # 固定繰り返し時のエラー回避用
+        if @at_least_one
+          values[:values] ||= [nil]
+        else
+          values[:values] ||= []
+        end
+        if !@fixed_times.nil? && !(values[:values].size % @fixed_times).zero?
+          iterator_times = ((values[:values].size / @fixed_times) + 1) * @fixed_times
+        else
+          iterator_times = values[:values].size
+        end
+        iterator_times.times do |index|
+          iterator_values = values[:values][index]
+          iterator_values ||= { }
           begin
             w, h = iterator.calculate_region(prep, region, iterator_values, stop_on_drawable)
             # 描画したので、方向に応じてリージョン補正

@@ -1,0 +1,130 @@
+page:
+  size: a4
+  orientation: portrait
+  margin:
+    top: 10
+    left: 10
+    bottom: 10
+    right: 10
+content:
+  type: group
+  out_table:
+    type: loop
+    x: 0
+    y: 0
+    direction: vertical
+    fixed_times: 2
+    page_break: false
+    gap: 0
+    header: out_table_header
+    iterator: out_table_content
+    footer: out_table_footer
+
+# 外側のテーブル定義
+out_table_content:
+  type: group
+  inner_table:
+    type: loop
+    x: 0
+    y: 0
+    direction: horizontal
+    fixed_times: 4
+    at_least_one: true
+    page_break: false
+    gap: 0
+    header: inner_table_header
+    iterator: inner_table_content
+    footer: inner_table_footer
+out_table_header:
+  type: group
+  out_table_header_label:
+    type: label
+    label: 外側のテーブルヘッダ
+    align: center
+    expand: true
+    region:
+      x: 0
+      y: 0
+      width: 30
+      height: 10
+  out_table_header_rect:
+    type: rectangle
+    expand: true
+    region:
+      x: 0
+      y: 0
+      width: 30
+      height: 10
+out_table_footer:
+  type: group
+  out_table_footer_label:
+    type: label
+    label: 外側のテーブルフッタ
+    align: center
+    expand: true
+    region:
+      x: 0
+      y: 0
+      width: 30
+      height: 10
+  out_table_header_rect:
+    type: rectangle
+    expand: true
+    region:
+      x: 0
+      y: 0
+      width: 30
+      height: 10
+
+# 内側のテーブル定義
+inner_table_content:
+  type: group
+  inner_table_content_column01_label:
+    type: label
+    label: 値１
+    region:
+      x: 0
+      y: 0
+      width: 30
+      height: 10
+  inner_table_content_column01_rect:
+    type: rectangle
+    region:
+      x: 0
+      y: 0
+      width: 30
+      height: 10
+inner_table_header:
+  type: group
+  inner_table_header_title:
+    type: label
+    label: 内側のテーブルヘッダ
+    region:
+      x: 0
+      y: 0
+      width: 30
+      height: 10
+  inner_table_header_column01_rect:
+    type: rectangle
+    region:
+      x: 0
+      y: 0
+      width: 30
+      height: 10
+inner_table_footer:
+  type: group
+  inner_table_footer_column01_label:
+    type: label
+    label: 内側のテーブルフッタ
+    region:
+      x: 0
+      y: 0
+      width: 30
+      height: 10
+  inner_table_footer_column01_rect:
+    type: rectangle
+    region:
+      x: 0
+      y: 0
+      width: 30
+      height: 10
