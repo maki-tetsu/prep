@@ -1,0 +1,98 @@
+page:
+  size: a4
+  orientation: portrait
+  margin:
+    top: 10
+    left: 10
+    bottom: 10
+    right: 10
+  header_height: 0
+  footer_height: 0
+content:
+  type: group
+  title:
+    type: label
+    label: "タイトル文字列"
+    region:
+      x: 10
+      y: 10
+      width: 100
+      height: 20
+    color:
+      red: 0
+      green: 0
+      blue: 0
+  line01:
+    type: line
+    start:
+      x: 10
+      y: 10
+    end:
+      x: 100
+      y: 10
+  line02:
+    type: line
+    start:
+      x: 10
+      y: 10
+    end:
+      x: 110
+      y: 110
+    color:
+      red: 1
+      green: 0
+      blue: 0
+  rectangle01:
+    type: rectangle
+    region:
+      x: 120
+      y: 0
+      width: 10
+      height: 5
+    line_color:
+      red: 0
+      green: 0.3
+      blue: 0
+    line_width: 3
+    fill_color:
+      red: 0
+      green: 1
+      blue: 1
+  rectangle02:
+    type: rectangle
+    region:
+      x: 10
+      y: 10
+      width: 100
+      height: 100
+    line_width: 1
+    line_color:
+      red: 1
+      green: 0
+      blue: 0
+    fill_color:
+      red: 1
+      green: 1
+      blue: 1
+  rect1:
+    type: rectangle
+    region:
+      x: 0
+      y: 0
+      width: 10
+      height: 10
+  rect2:
+    type: rectangle
+    region:
+      x: 10
+      y: 10
+      width: 10
+      height: 10
+  normal_image:
+    type: image
+    image_path: "qrimage.png"
+    region:
+      x: 120
+      y: 70
+      width: 25
+      height: 25
