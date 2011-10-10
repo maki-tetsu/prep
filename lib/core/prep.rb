@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Prep クラスのソースファイル
 # Author:: maki-tetsu
 # Date:: 2011/03/11
@@ -11,6 +12,7 @@ require "hpdf"
 require File.join(File.dirname(__FILE__), "label")
 require File.join(File.dirname(__FILE__), "line")
 require File.join(File.dirname(__FILE__), "rectangle")
+require File.join(File.dirname(__FILE__), "arc_rectangle")
 require File.join(File.dirname(__FILE__), "group")
 require File.join(File.dirname(__FILE__), "region")
 require File.join(File.dirname(__FILE__), "page")

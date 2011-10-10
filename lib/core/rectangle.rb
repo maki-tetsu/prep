@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Rectangle クラスのソースファイル
 # Author:: maki-tetsu
 # Date:: 2011/03/11
@@ -120,6 +121,13 @@ module PREP # nodoc
         pos_x, pos_y = calculate_pos(prep.current_page, region, @region.x, @region.y)
         prep.current_page.rectangle(pos_x, pos_y - @region.height, @region.width, @region.height)
 
+        fill_and_or_stroke(prep)
+
+        @region = region_backup
+        prep.current_page.drawed = true
+      end
+
+      def fill_and_or_stroke(prep)
         if @fill_color.white?
           unless @line_color.white?
             prep.current_page.stroke
@@ -129,9 +137,8 @@ module PREP # nodoc
         else
           prep.current_page.fill_stroke
         end
-        @region = region_backup
-        prep.current_page.drawed = true
       end
+      private :fill_and_or_stroke
     end
   end
 end

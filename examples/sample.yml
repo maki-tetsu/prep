@@ -88,3 +88,31 @@ content:
       y: 10
       width: 10
       height: 10
+  # arc_rect_rect:
+  #   type: rectangle
+  #   region:
+  #     x: 50
+  #     y: 200
+  #     width: 100
+  #     height: 30
+  #   line_color:
+  #     red: 0
+  #     green: 0
+  #     blue: 1
+  arc_rect:
+    type: arc_rectangle
+    line_width: 10
+    region:
+      x: 50
+      y: 200
+      width: 100
+      height: 30
+    line_color:
+      red: 1
+      green: 0
+      blue: 1
+    fill_color:
+      red: 0
+      green: 1
+      blue: 1
+    round_arc: 5

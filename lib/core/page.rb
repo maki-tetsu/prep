@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Page クラスのソースファイル
 # Author:: maki-tetsu
 # Date:: 2011/03/11
@@ -13,6 +14,7 @@ module PREP # nodoc
     class Page
       # ページサイズの設定種別
       SIZES = {
+        :a5 => HPDFDoc::HPDF_PAGE_SIZE_A5, # A5
         :a4 => HPDFDoc::HPDF_PAGE_SIZE_A4, # A4
         :a3 => HPDFDoc::HPDF_PAGE_SIZE_A3, # A3
       }

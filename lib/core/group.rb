@@ -8,6 +8,7 @@ require File.join(File.dirname(__FILE__), "drawable")
 require File.join(File.dirname(__FILE__), "label")
 require File.join(File.dirname(__FILE__), "line")
 require File.join(File.dirname(__FILE__), "rectangle")
+require File.join(File.dirname(__FILE__), "arc_rectangle")
 require File.join(File.dirname(__FILE__), "image")
 require File.join(File.dirname(__FILE__), "loop")
 
@@ -84,6 +85,15 @@ module PREP # nodoc
           end
         when "rectangle"
           klass = Rectangle
+          unless @@allow_all
+            @drawables.values.each do |drawable|
+              if Loop === drawable
+                raise "Group already has Loop!!"
+              end
+            end
+          end
+        when "arc_rectangle"
+          klass = ArcRectangle
           unless @@allow_all
             @drawables.values.each do |drawable|
               if Loop === drawable
