@@ -24,9 +24,14 @@ module PREP # nodoc
         :allow_header_split => true,
         :fixed_times => nil,
         :at_least_one => false,
+        :header_repeat => true,
+        :x => 0,
+        :y => 0,
       }
 
-      attr_reader :direction, :gap, :header_group, :iterator_group, :footer_group, :point, :page_break, :width, :height, :allow_header_split, :fixed_times, :at_least_one
+      attr_reader :direction, :gap, :header_group, :iterator_group, :footer_group, :point
+      attr_reader :page_break, :width, :height, :allow_header_split, :fixed_times, :at_least_one
+      attr_reader :header_repeat
 
       def initialize(identifier, values = { })
         values = @@default_values.merge(key_string_to_symbol(values))
@@ -43,6 +48,8 @@ module PREP # nodoc
         @allow_header_split = values[:allow_header_split]
         @fixed_times = values[:fixed_times]
         @at_least_one = !!values[:at_least_one]
+        @header_repeat = !!values[:header_repeat]
+        @header_rendering_count = 0
       end
 
       def direction=(d)
@@ -130,6 +137,8 @@ module PREP # nodoc
 
           return w, h
         end
+        # 計算を抜けるタイミングで @header_rendering_count をクリア
+        @header_rendering_count = 0
       end
 
       # リージョン補正
@@ -201,6 +210,9 @@ module PREP # nodoc
 
         # フッタブロック描画
         current_region = draw_footer(prep, current_region, values, stop_on_drawable)
+
+        # ヘッダの描画回数をクリア
+        @header_rendering_count = 0
       end
 
       private
@@ -209,6 +221,12 @@ module PREP # nodoc
       #
       # 描画後に新しい region を返却
       def draw_header(prep, region, values, stop_on_drawable = nil)
+        # ヘッダー描画回数をインクリメント
+        @header_rendering_count += 1
+        if !@header_repeat && @header_rendering_count > 1
+          # ヘッダー繰り返しなしかつヘッダの描画回数が２回目以降の場合は何もせずに region を返却
+          return region
+        end
         unless @header_group.nil?
           header = prep.group(@header_group)
           w, h = rewind_current_page(prep) do
@@ -237,6 +255,12 @@ module PREP # nodoc
 
       # ヘッダ構成要素の描画領域を計算するためのメソッド
       def calculate_header_region(prep, region, values, stop_on_drawable = nil)
+        # ヘッダー描画回数をインクリメント
+        @header_rendering_count += 1
+        if !@header_repeat && @header_rendering_count > 1
+          # ヘッダー繰り返しなしかつヘッダの描画回数が２回目以降の場合は何もせずに region を返却
+          return region
+        end
         unless @header_group.nil?
           header = prep.group(@header_group)
           w, h = header.calculate_region(prep, region, values[:header], stop_on_drawable)
