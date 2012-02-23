@@ -1,3 +1,7 @@
+2012-03-12  Tetsuhisa MAKINO  <tim.makino@gmail.com>
+
+	* lib/core/loop.rb (PREP::Core::Loop#draw_iterator): fix bug on gap calculation
+
 2012-03-08  Tetsuhisa MAKINO  <tim.makino@gmail.com>
 
 	* lib/core/rectangle.rb (PREP::Core::Rectangle#line_width): support to be able to specify the zero to line_width

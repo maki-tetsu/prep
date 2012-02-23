@@ -334,6 +334,7 @@ module PREP # nodoc
           iterator_times = values[:values].size
         end
         iterator_times.times do |index|
+          add_gap = false
           iterator_values = values[:values][index]
           iterator_values ||= { }
           begin
@@ -345,19 +346,23 @@ module PREP # nodoc
             end
             # 描画したので、方向に応じてリージョン補正
             if @direction == DIRECTIONS[:horizontal] # 右方向
-              if has_footer_group?(prep) || (values[:values].size > index + 1)
-                w += @gap
-              end
               region.x += w
               region.width -= w
+              if has_footer_group?(prep) || (values[:values].size > index + 1)
+                add_gap = true
+                region.x += @gap
+                region.width -= @gap
+              end
               @height ||= h
               @height = h if @height < h
             else # if @direction == DIRECTIONS[:vertical] # 下方向
-              if has_footer_group?(prep) || (values[:values].size > index + 1)
-                h += @gap
-              end
               region.y += h
               region.height -= h
+              if has_footer_group?(prep) || (values[:values].size > index + 1)
+                add_gap = true
+                region.y += @gap
+                region.height -= @gap
+              end
               @width ||= w
               @width = w if @width < w
             end
@@ -382,7 +387,11 @@ module PREP # nodoc
               end
               region = draw_header(prep, region, values, stop_on_drawable)
               # リトライ
-              retry
+              if add_gap
+                next
+              else
+                retry
+              end
             end
             raise
           rescue RegionHeightOverflowError
@@ -407,7 +416,11 @@ module PREP # nodoc
               # ヘッダを再描画
               region = draw_header(prep, region, values, stop_on_drawable)
               # リトライ
-              retry
+              if add_gap
+                next
+              else
+                retry
+              end
             end
             raise
           end
@@ -431,25 +444,30 @@ module PREP # nodoc
           iterator_times = values[:values].size
         end
         iterator_times.times do |index|
+          add_gap = false
           iterator_values = values[:values][index]
           iterator_values ||= { }
           begin
             w, h = iterator.calculate_region(prep, region, iterator_values, stop_on_drawable)
             # 描画したので、方向に応じてリージョン補正
             if @direction == DIRECTIONS[:horizontal] # 右方向
-              if has_footer_group?(prep) || (values[:values].size > index + 1)
-                w += @gap
-              end
               region.x += w
               region.width -= w
+              if has_footer_group?(prep) || (values[:values].size > index + 1)
+                add_gap = true
+                region.x += @gap
+                region.width -= @gap
+              end
               @height ||= h
               @height = h if @height < h
             else # if @direction == DIRECTIONS[:vertical] # 下方向
-              if has_footer_group?(prep) || (values[:values].size > index + 1)
-                h += @gap
-              end
               region.y += h
               region.height -= h
+              if has_footer_group?(prep) || (values[:values].size > index + 1)
+                add_gap = true
+                region.y += @gap
+                region.height -= @gap
+              end
               @width ||= w
               @width = w if @width < w
             end
@@ -475,7 +493,11 @@ module PREP # nodoc
               # ヘッダを再計算
               region = calculate_header_region(prep, region, values, stop_on_drawable)
               # リトライ
-              retry
+              if add_gap
+                next
+              else
+                retry
+              end
             end
             raise
           rescue RegionHeightOverflowError
@@ -500,7 +522,11 @@ module PREP # nodoc
               # ヘッダを再計算
               region = calculate_header_region(prep, region, values, stop_on_drawable)
               # リトライ
-              retry
+              if add_gap
+                next
+              else
+                retry
+              end
             end
             raise
           end
