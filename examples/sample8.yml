@@ -1,0 +1,59 @@
+page:
+  size: a4
+  orientation: portrait
+  margin:
+    top: 10
+    left: 10
+    bottom: 10
+    right: 10
+# 内側のグループ定義
+inner_loop_header:
+  type: group
+  title:
+    type: label
+    label: "hogehoge"
+    region:
+      x: 10
+      y: 10
+      width: 60
+      height: 10
+inner_loop_content:
+  type: group
+  title:
+    type: label
+    label: "hogehoge"
+    region:
+      x: 10
+      y: 10
+      width: 60
+      height: 10
+# 外側のテーブル定義
+out_loop_header:
+  type: group
+  # タイトル文字列
+  title_label:
+    type: label
+    label: "タイトル"
+    region:
+      x: 10
+      y: 10
+      width: 50
+      height: 5
+out_loop_content:
+  type: group
+  inner_loop:
+    type: loop
+    direction: vertical
+    gap: 10
+    header: inner_loop_header
+    iterator: inner_loop_content
+    page_break: true
+content:
+  type: group
+  out_loop:
+    type: loop
+    header: out_loop_header
+    iterator: out_loop_content
+    direction: vertical
+    page_break: true
+    header_repeat: false
