@@ -44,12 +44,12 @@ module PREP # nodoc
         @line_color = Color.new(values[:line_color][:red],
                                 values[:line_color][:green],
                                 values[:line_color][:blue])
-        self.line_width = values[:line_width]
         self.line_style = values[:line_style]
         self.fill_pattern = values[:fill_pattern]
         @fill_color = Color.new(values[:fill_color][:red],
                                 values[:fill_color][:green],
                                 values[:fill_color][:blue])
+        self.line_width = values[:line_width]
         @expand = values[:expand]
       end
 
@@ -62,6 +62,8 @@ module PREP # nodoc
       def line_width=(w)
         if w > 0
           @line_width = w
+        elsif w.zero?
+          @line_color = @fill_color
         else
           raise "Rectangle line width must be grater than zero."
         end
