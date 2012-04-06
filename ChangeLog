@@ -1,3 +1,7 @@
+2012-04-06  Tetsuhisa MAKINO  <tim.makino@gmail.com>
+
+	* lib/core/drawable.rb (PREP::Core::Drawable#visible?): add visible? method to control drawable visibility
+
 2012-03-12  Tetsuhisa MAKINO  <tim.makino@gmail.com>
 
 	* lib/core/loop.rb (PREP::Core::Loop#draw_iterator): fix bug on gap calculation

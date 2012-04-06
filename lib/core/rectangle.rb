@@ -22,13 +22,14 @@ module PREP # nodoc
       }
 
       @@default_values = {
-        :line_color   => { :red => 0, :green => 0, :blue => 0 },
-        :line_width   => 1,
-        :line_style   => STYLES[:solid],
-        :fill_pattern => FILL_PATTERNS[:flat],
-        :fill_color   => { :red => 1, :green => 1, :blue => 1 },
-        :layer        => 1,
-        :expand       => false,
+        :line_color      => { :red => 0, :green => 0, :blue => 0 },
+        :line_width      => 1,
+        :line_style      => STYLES[:solid],
+        :fill_pattern    => FILL_PATTERNS[:flat],
+        :fill_color      => { :red => 1, :green => 1, :blue => 1 },
+        :layer           => 1,
+        :expand          => false,
+        :control_visible => false,
       }
 
       attr_reader :region, :line_color, :line_width, :line_style, :fill_pattern, :fill_color, :expand
@@ -51,6 +52,7 @@ module PREP # nodoc
                                 values[:fill_color][:blue])
         self.line_width = values[:line_width]
         @expand = values[:expand]
+        @control_visible = values[:control_visible]
       end
 
       def expand_region(setting)
@@ -104,26 +106,32 @@ module PREP # nodoc
         STDERR.puts("Draw on #{self.class} #{self.identifier}") if ENV['DEBUG']
         # 領域判定
         calculate_region(prep, region, values)
-        prep.current_page.set_line_width(@line_width.to_f)
-        unless @line_color.white?
-          prep.current_page.set_rgb_stroke(@line_color.red.to_f,
-                                           @line_color.green.to_f,
-                                           @line_color.blue.to_f)
+
+        if visible?(values)
+          prep.current_page.set_line_width(@line_width.to_f)
+          unless @line_color.white?
+            prep.current_page.set_rgb_stroke(@line_color.red.to_f,
+                                             @line_color.green.to_f,
+                                             @line_color.blue.to_f)
+          end
+          unless @fill_color.white?
+            prep.current_page.set_rgb_fill(@fill_color.red.to_f,
+                                           @fill_color.green.to_f,
+                                           @fill_color.blue.to_f)
+          end
         end
-        unless @fill_color.white?
-          prep.current_page.set_rgb_fill(@fill_color.red.to_f,
-                                         @fill_color.green.to_f,
-                                         @fill_color.blue.to_f)
-        end
+
         region_backup = @region.dup
         if @expand_region
           @region = @expand_region.dup
           @expand_region = nil
         end
         pos_x, pos_y = calculate_pos(prep.current_page, region, @region.x, @region.y)
-        prep.current_page.rectangle(pos_x, pos_y - @region.height, @region.width, @region.height)
 
-        fill_and_or_stroke(prep)
+        if visible?(values)
+          prep.current_page.rectangle(pos_x, pos_y - @region.height, @region.width, @region.height)
+          fill_and_or_stroke(prep)
+        end
 
         @region = region_backup
         prep.current_page.drawed = true

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Drawable クラスのソースファイル
 # Author:: maki-tetsu
 # Date:: 2011/03/11
@@ -157,6 +158,13 @@ module PREP # nodoc
         end
 
         return values
+      end
+
+      # 実際の描画を行うかどうかの判定
+      def visible?(value)
+        return true unless @control_visible
+
+        return !!value
       end
     end
   end

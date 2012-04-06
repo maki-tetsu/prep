@@ -39,18 +39,22 @@ module PREP # nodoc
         STDERR.puts("Draw on #{self.class} #{self.identifier}") if ENV['DEBUG']
         # 領域判定
         calculate_region(prep, region, values)
-        # 円弧描画時は 5% 太さを上げる
-        prep.current_page.set_line_width(@line_width.to_f * 1.05)
-        unless @line_color.white?
-          prep.current_page.set_rgb_stroke(@line_color.red.to_f,
-                                           @line_color.green.to_f,
-                                           @line_color.blue.to_f)
+
+        if visible?(values)
+          # 円弧描画時は 5% 太さを上げる
+          prep.current_page.set_line_width(@line_width.to_f * 1.05)
+          unless @line_color.white?
+            prep.current_page.set_rgb_stroke(@line_color.red.to_f,
+                                             @line_color.green.to_f,
+                                             @line_color.blue.to_f)
+          end
+          unless @fill_color.white?
+            prep.current_page.set_rgb_fill(@fill_color.red.to_f,
+                                           @fill_color.green.to_f,
+                                           @fill_color.blue.to_f)
+          end
         end
-        unless @fill_color.white?
-          prep.current_page.set_rgb_fill(@fill_color.red.to_f,
-                                         @fill_color.green.to_f,
-                                         @fill_color.blue.to_f)
-        end
+
         region_backup = @region.dup
         if @expand_region
           @region = @expand_region.dup
@@ -58,106 +62,108 @@ module PREP # nodoc
         end
         pos_x, pos_y = calculate_pos(prep.current_page, region, @region.x, @region.y)
 
-        ### 塗り潰し描画
-        unless @fill_color.white?
-          # 縦方向
-          prep.current_page.rectangle(pos_x + @round_arc, pos_y - @region.height,
-                                      @region.width - (@round_arc * 2), @region.height)
-          prep.current_page.fill
-          # 横方向
-          prep.current_page.rectangle(pos_x, pos_y - @region.height + @round_arc,
-                                      @region.width, @region.height - (@round_arc * 2))
-          prep.current_page.fill
-        end
+        if visible?(values)
+          ### 塗り潰し描画
+          unless @fill_color.white?
+            # 縦方向
+            prep.current_page.rectangle(pos_x + @round_arc, pos_y - @region.height,
+                                        @region.width - (@round_arc * 2), @region.height)
+            prep.current_page.fill
+            # 横方向
+            prep.current_page.rectangle(pos_x, pos_y - @region.height + @round_arc,
+                                        @region.width, @region.height - (@round_arc * 2))
+            prep.current_page.fill
+          end
 
-        # ここからが本番
-        ### ４角の円弧を描画
-        # 左上
-        unless @fill_color.white?
-          prep.current_page.move_to(pos_x + @round_arc, pos_y - @round_arc)
-          prep.current_page.line_to(pos_x, pos_y - @round_arc)
-          prep.current_page.arc(pos_x + @round_arc,
-                                pos_y - @round_arc,
-                                @round_arc, 360 * 0.75, 360)
-          prep.current_page.line_to(pos_x + @round_arc, pos_y - @round_arc)
-          prep.current_page.fill
-        end
-        unless @line_color.white?
-          prep.current_page.arc(pos_x + @round_arc,
-                                pos_y - @round_arc,
-                                @round_arc, 360 * 0.75, 360)
-          prep.current_page.stroke
-        end
-        # 右上
-        unless @fill_color.white?
-          prep.current_page.move_to(pos_x + @region.width - @round_arc, pos_y - @round_arc)
-          prep.current_page.line_to(pos_x + @region.width - @round_arc, pos_y)
-          prep.current_page.arc(pos_x + @region.width - @round_arc,
-                                pos_y - @round_arc,
-                                @round_arc, 0, 360 * 0.25)
-          prep.current_page.line_to(pos_x + @region.width - @round_arc, pos_y - @round_arc)
-          prep.current_page.fill
-        end
-        unless @line_color.white?
-          prep.current_page.arc(pos_x + @region.width - @round_arc,
-                                pos_y - @round_arc,
-                                @round_arc, 0, 360 * 0.25)
-          prep.current_page.stroke
-        end
-        # 左下
-        unless @fill_color.white?
-          prep.current_page.move_to(pos_x + @round_arc, pos_y - @region.height + @round_arc)
-          prep.current_page.line_to(pos_x + @round_arc, pos_y - @region.height)
-          prep.current_page.arc(pos_x + @round_arc,
-                                pos_y - @region.height + @round_arc,
-                                @round_arc, 360 * 0.5, 360 * 0.75)
-          prep.current_page.line_to(pos_x + @round_arc, pos_y - @region.height + @round_arc)
-          prep.current_page.fill
-        end
-        unless @line_color.white?
-          prep.current_page.arc(pos_x + @round_arc,
-                                pos_y - @region.height + @round_arc,
-                                @round_arc, 360 * 0.5, 360 * 0.75)
-          prep.current_page.stroke
-        end
-        # 右下
-        unless @fill_color.white?
-          prep.current_page.move_to(pos_x + @region.width - @round_arc, pos_y - @region.height + @round_arc)
-          prep.current_page.line_to(pos_x + @region.width, pos_y - @region.height + @round_arc)
-          prep.current_page.arc(pos_x + @region.width - @round_arc,
-                                pos_y - @region.height + @round_arc,
-                                @round_arc, 360 * 0.25, 360 * 0.5)
-          prep.current_page.line_to(pos_x + @region.width - @round_arc, pos_y - @region.height + @round_arc)
-          prep.current_page.fill
-        end
-        unless @line_color.white?
-          prep.current_page.arc(pos_x + @region.width - @round_arc,
-                                pos_y - @region.height + @round_arc,
-                                @round_arc, 360 * 0.25, 360 * 0.5)
-          prep.current_page.stroke
-        end
+          # ここからが本番
+          ### ４角の円弧を描画
+          # 左上
+          unless @fill_color.white?
+            prep.current_page.move_to(pos_x + @round_arc, pos_y - @round_arc)
+            prep.current_page.line_to(pos_x, pos_y - @round_arc)
+            prep.current_page.arc(pos_x + @round_arc,
+                                  pos_y - @round_arc,
+                                  @round_arc, 360 * 0.75, 360)
+            prep.current_page.line_to(pos_x + @round_arc, pos_y - @round_arc)
+            prep.current_page.fill
+          end
+          unless @line_color.white?
+            prep.current_page.arc(pos_x + @round_arc,
+                                  pos_y - @round_arc,
+                                  @round_arc, 360 * 0.75, 360)
+            prep.current_page.stroke
+          end
+          # 右上
+          unless @fill_color.white?
+            prep.current_page.move_to(pos_x + @region.width - @round_arc, pos_y - @round_arc)
+            prep.current_page.line_to(pos_x + @region.width - @round_arc, pos_y)
+            prep.current_page.arc(pos_x + @region.width - @round_arc,
+                                  pos_y - @round_arc,
+                                  @round_arc, 0, 360 * 0.25)
+            prep.current_page.line_to(pos_x + @region.width - @round_arc, pos_y - @round_arc)
+            prep.current_page.fill
+          end
+          unless @line_color.white?
+            prep.current_page.arc(pos_x + @region.width - @round_arc,
+                                  pos_y - @round_arc,
+                                  @round_arc, 0, 360 * 0.25)
+            prep.current_page.stroke
+          end
+          # 左下
+          unless @fill_color.white?
+            prep.current_page.move_to(pos_x + @round_arc, pos_y - @region.height + @round_arc)
+            prep.current_page.line_to(pos_x + @round_arc, pos_y - @region.height)
+            prep.current_page.arc(pos_x + @round_arc,
+                                  pos_y - @region.height + @round_arc,
+                                  @round_arc, 360 * 0.5, 360 * 0.75)
+            prep.current_page.line_to(pos_x + @round_arc, pos_y - @region.height + @round_arc)
+            prep.current_page.fill
+          end
+          unless @line_color.white?
+            prep.current_page.arc(pos_x + @round_arc,
+                                  pos_y - @region.height + @round_arc,
+                                  @round_arc, 360 * 0.5, 360 * 0.75)
+            prep.current_page.stroke
+          end
+          # 右下
+          unless @fill_color.white?
+            prep.current_page.move_to(pos_x + @region.width - @round_arc, pos_y - @region.height + @round_arc)
+            prep.current_page.line_to(pos_x + @region.width, pos_y - @region.height + @round_arc)
+            prep.current_page.arc(pos_x + @region.width - @round_arc,
+                                  pos_y - @region.height + @round_arc,
+                                  @round_arc, 360 * 0.25, 360 * 0.5)
+            prep.current_page.line_to(pos_x + @region.width - @round_arc, pos_y - @region.height + @round_arc)
+            prep.current_page.fill
+          end
+          unless @line_color.white?
+            prep.current_page.arc(pos_x + @region.width - @round_arc,
+                                  pos_y - @region.height + @round_arc,
+                                  @round_arc, 360 * 0.25, 360 * 0.5)
+            prep.current_page.stroke
+          end
 
-        # 元の太さへ
-        prep.current_page.set_line_width(@line_width.to_f)
+          # 元の太さへ
+          prep.current_page.set_line_width(@line_width.to_f)
 
-        # ### ４辺描画
-        unless @line_color.white?
-          # 上
-          prep.current_page.move_to(pos_x + @round_arc,                 pos_y)
-          prep.current_page.line_to(pos_x + @region.width - @round_arc, pos_y)
-          prep.current_page.stroke
-          # 下
-          prep.current_page.move_to(pos_x + @round_arc,                 pos_y - @region.height)
-          prep.current_page.line_to(pos_x + @region.width - @round_arc, pos_y - @region.height)
-          prep.current_page.stroke
-          # 左
-          prep.current_page.move_to(pos_x,                              pos_y - @region.height + @round_arc)
-          prep.current_page.line_to(pos_x,                              pos_y - @round_arc)
-          prep.current_page.stroke
-          # 右
-          prep.current_page.move_to(pos_x + @region.width,              pos_y - @region.height + @round_arc)
-          prep.current_page.line_to(pos_x + @region.width,              pos_y - @round_arc)
-          prep.current_page.stroke
+          # ### ４辺描画
+          unless @line_color.white?
+            # 上
+            prep.current_page.move_to(pos_x + @round_arc,                 pos_y)
+            prep.current_page.line_to(pos_x + @region.width - @round_arc, pos_y)
+            prep.current_page.stroke
+            # 下
+            prep.current_page.move_to(pos_x + @round_arc,                 pos_y - @region.height)
+            prep.current_page.line_to(pos_x + @region.width - @round_arc, pos_y - @region.height)
+            prep.current_page.stroke
+            # 左
+            prep.current_page.move_to(pos_x,                              pos_y - @region.height + @round_arc)
+            prep.current_page.line_to(pos_x,                              pos_y - @round_arc)
+            prep.current_page.stroke
+            # 右
+            prep.current_page.move_to(pos_x + @region.width,              pos_y - @region.height + @round_arc)
+            prep.current_page.line_to(pos_x + @region.width,              pos_y - @round_arc)
+            prep.current_page.stroke
+          end
         end
 
         @region = region_backup
