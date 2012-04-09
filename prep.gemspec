@@ -5,21 +5,23 @@
 
 Gem::Specification.new do |s|
   s.name = %q{prep}
-  s.version = "0.2.5"
+  s.version = "0.4.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Tetsuhisa MAKINO"]
-  s.date = %q{2011-04-27}
+  s.date = %q{2012-04-09}
   s.description = %q{PREP is PDF Report generator depends on HPDF.}
   s.email = %q{tim.makino@gmail.com}
   s.executables = ["prep-test", "prep-helper"]
   s.extra_rdoc_files = [
+    "ChangeLog",
     "LICENSE.txt",
     "README.rdoc"
   ]
   s.files = [
     ".document",
     ".rspec",
+    "ChangeLog",
     "Gemfile",
     "Gemfile.lock",
     "LICENSE.txt",
@@ -28,23 +30,39 @@ Gem::Specification.new do |s|
     "VERSION",
     "bin/prep-helper",
     "bin/prep-test",
+    "examples/control_visible_sample.yml",
+    "examples/gap_test.yml",
+    "examples/generate_control_visible.rb",
+    "examples/generate_control_visible_sample.rb",
+    "examples/generate_gap_test.rb",
     "examples/generate_group_sample.rb",
+    "examples/generate_image_sample.rb",
+    "examples/generate_rect_line_width_zero_sample.rb",
     "examples/generate_sample.rb",
     "examples/generate_sample2.rb",
     "examples/generate_sample3.rb",
     "examples/generate_sample4.rb",
     "examples/generate_sample5.rb",
     "examples/generate_sample6.rb",
+    "examples/generate_sample7.rb",
+    "examples/generate_sample8.rb",
     "examples/generate_sample_dataset.rb",
     "examples/group_sample.yml",
+    "examples/image_sample.yml",
+    "examples/qrimage.png",
+    "examples/rect_line_width_zero_sample.yml",
     "examples/sample.yml",
     "examples/sample2.yml",
     "examples/sample3.yml",
     "examples/sample5.yml",
     "examples/sample6.yml",
+    "examples/sample7.yml",
+    "examples/sample8.yml",
+    "lib/core/arc_rectangle.rb",
     "lib/core/color.rb",
     "lib/core/drawable.rb",
     "lib/core/group.rb",
+    "lib/core/image.rb",
     "lib/core/label.rb",
     "lib/core/line.rb",
     "lib/core/loop.rb",
@@ -64,16 +82,23 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/maki-tetsu/prep}
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.4.2}
+  s.rubygems_version = %q{1.6.2}
   s.summary = %q{PREP is PDF Report generator depends on HPDF.}
   s.test_files = [
+    "examples/generate_control_visible.rb",
+    "examples/generate_control_visible_sample.rb",
+    "examples/generate_gap_test.rb",
     "examples/generate_group_sample.rb",
+    "examples/generate_image_sample.rb",
+    "examples/generate_rect_line_width_zero_sample.rb",
     "examples/generate_sample.rb",
     "examples/generate_sample2.rb",
     "examples/generate_sample3.rb",
     "examples/generate_sample4.rb",
     "examples/generate_sample5.rb",
     "examples/generate_sample6.rb",
+    "examples/generate_sample7.rb",
+    "examples/generate_sample8.rb",
     "examples/generate_sample_dataset.rb",
     "spec/component_spec.rb",
     "spec/prep_spec.rb",
